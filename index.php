@@ -35,12 +35,12 @@
         <div class="card-body login-card-body">
           <p class="login-box-msg">Hospital Inventory Management System</p>
 
-          <form action="../index3.html" method="post">
+          <form action="dist/pages/Admin/dsshboard.php" method="post">
             <div class="input-group mb-3">
               <div class="form-floating flex-grow-1">
                 <input
                   id="loginEmail"
-                  type="email"
+                  type="text"
                   class="form-control"
                   placeholder="name@example.com"
                   required
