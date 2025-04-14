@@ -7,4 +7,69 @@
   .card-header {
     padding: 1rem;
   }
-  
+  body {
+    background: linear-gradient(to right,rgb(103, 137, 116),rgb(222, 229, 236));
+    font-family: "Source Sans 3", sans-serif;
+  }
+
+  .login-box {
+    width: 400px;
+    margin: 80px auto;
+  }
+
+  .card {
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-header {
+    text-align: center;
+    background: #fff;
+    border-bottom: none;
+    padding: 20px 0;
+  }
+
+  .logo-img {
+    max-width: 140px;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .login-box-msg {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+  }
+
+  .input-group .form-control {
+    border-radius: 10px 0 0 10px;
+  }
+
+  .input-group-text {
+    background-color: #f0f0f0;
+    border-radius: 0 10px 10px 0;
+  }
+
+  .btn-primary {
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  .form-floating > label {
+    color: #888;
+  }
+
+  .forgot-link {
+    text-align: center;
+    display: block;
+    margin-top: 20px;
+    color: #007bff;
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+
+  .forgot-link:hover {
+    text-decoration: underline;
+  }
