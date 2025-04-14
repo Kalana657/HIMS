@@ -15376,4 +15376,16 @@ html.maximized-card {
   width: 32px;
 }
 
+.logo-img {
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
+  object-fit: contain;
+}
+.card-header {
+  padding: 1rem;
+}
+
+
+
 /*# sourceMappingURL=adminlte.css.map */
