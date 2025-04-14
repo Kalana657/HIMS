@@ -28,7 +28,7 @@
       <div class="card card-outline card-primary">
         <div class="card-header">
           <a href="../index2.html">
-            <img src="images/logo.jfif" alt="Logo" class="logo-img" />
+            <img src="images/logo.jpeg" alt="Logo" class="logo-img" />
           </a>
         </div>
 
