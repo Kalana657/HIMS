@@ -1,4 +1,5 @@
 <?php
+session_start(); // enable session
 include('db_connect.php');
 
 // Collect and sanitize input
@@ -14,11 +15,17 @@ $update_time = date("Y-m-d H:i:s");
 $sql = "INSERT INTO user (User_name, Email, Password, Update_time)
         VALUES ('$username', '$email', '$password', '$update_time')";
 
-if (mysqli_query($conn, $sql)) {
-    echo "New user created successfully.";
-} else {
-    echo "Error: " . $sql . "<br>" . mysqli_error($conn);
-}
 
+if (mysqli_query($conn, $sql)) {
+    $_SESSION['status'] = "success";
+    $_SESSION['message'] = "User added successfully!";
+} else {
+    $_SESSION['status'] = "error";
+    $_SESSION['message'] = "Failed to add user: " . mysqli_error($conn);
+}
 mysqli_close($conn);
+
+// Redirect back to the form
+header("Location: Addnewuser.php");
+exit;
 ?>

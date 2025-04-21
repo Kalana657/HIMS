@@ -8,7 +8,7 @@ $db_name = "hims_hospital";      // your database name
 $conn = mysqli_connect($host, $db_user, $db_pass, $db_name);
 
 // Check connection
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+if ($conn) {
+    echo"hi";
 }
 ?>

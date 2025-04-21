@@ -1,3 +1,11 @@
+<?php
+session_start();
+?>
+<!doctype html>
+<html lang="en">
+
+
+
 <!doctype html>
 <html lang="en">
   <!--begin::Head-->
@@ -19,6 +27,8 @@
 
     <!-- Bootstrap 4 JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+     <!-- SweetAlert2 -->
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <meta
       name="description"
@@ -133,7 +143,39 @@
       <!--end::Sidebar-->
       <!--begin::App Main-->
       <main class="app-main">
-    
+      
+      <?php
+
+            echo $_SESSION['status'];
+            if (isset($_SESSION['status']) && isset($_SESSION['message'])) {
+                $status = $_SESSION['status'];
+                $message = $_SESSION['message'];
+
+                // Unset after displaying
+                unset($_SESSION['status']);
+                unset($_SESSION['message']);
+
+                echo "
+                <script>
+                  document.addEventListener('DOMContentLoaded', function () {
+                    Swal.fire({
+                      title: '".ucfirst($status)."!',
+                      text: '$message',
+                      icon: '$status',
+                      confirmButtonText: 'OK'
+                    });
+                  });
+                </script>";
+            }
+        ?>
+
+
+
+
+
+
+
+
        <div class="container mt-4">
   <div class="card shadow-sm">
     <div class="card-header">
