@@ -20,7 +20,7 @@
            
               <li class="nav-item">
                 <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-box-seam-fill"></i>
+                  <i class="nav-icon bi bi-plus-circle-fill"></i>
                   <p>
                     Add Section
                     <i class="nav-arrow bi bi-chevron-right"></i>
@@ -28,9 +28,9 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="./widgets/small-box.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Small Box</p>
+                    <a href="Addnewuser.php" class="nav-link">
+                      <i class="nav-icon 	bi bi-person-plus"></i>
+                      <p>Add New User</p>
                     </a>
                   </li>
                   <li class="nav-item">
