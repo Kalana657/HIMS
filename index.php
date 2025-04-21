@@ -35,7 +35,8 @@
         <div class="card-body login-card-body">
           <p class="login-box-msg">Hospital Inventory Management System</p>
 
-          <form action="dist/pages/Admin/dsshboard.php" method="post">
+       
+          <form action="login_process.php" method="POST" class="mt-4">
             <div class="input-group mb-3">
               <div class="form-floating flex-grow-1">
                 <input

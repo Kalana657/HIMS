@@ -34,9 +34,9 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="./widgets/info-box.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>info Box</p>
+                    <a href="Addnewrole.php" class="nav-link">
+                    <i class="nav-icon bi bi-person-gear"></i>
+                        <p>Add New User Role</p>
                     </a>
                   </li>
                   <li class="nav-item">
