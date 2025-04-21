@@ -230,9 +230,9 @@
               </li>
               <li class="nav-header">DOCUMENTATIONS</li>
               <li class="nav-item">
-                <a href="./docs/introduction.html" class="nav-link">
-                  <i class="nav-icon bi bi-download"></i>
-                  <p>Installation</p>
+                <a href="logout.php" class="nav-link">
+                <i class="nav-icon bi bi-box-arrow-right"></i>
+                     <p>LogOut</p>
                 </a>
               </li>
               <li class="nav-item">
