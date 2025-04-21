@@ -146,28 +146,25 @@ session_start();
       
       <?php
 
-            echo $_SESSION['status'];
-            if (isset($_SESSION['status']) && isset($_SESSION['message'])) {
-                $status = $_SESSION['status'];
-                $message = $_SESSION['message'];
-
-                // Unset after displaying
-                unset($_SESSION['status']);
-                unset($_SESSION['message']);
-
-                echo "
-                <script>
-                  document.addEventListener('DOMContentLoaded', function () {
-                    Swal.fire({
-                      title: '".ucfirst($status)."!',
-                      text: '$message',
-                      icon: '$status',
-                      confirmButtonText: 'OK'
-                    });
-                  });
-                </script>";
-            }
-        ?>
+        if (isset($_SESSION['status']) && isset($_SESSION['message'])) {
+            echo '
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                Swal.fire({
+                    title: "' . ucfirst($_SESSION['status']) . '!",
+                    text: "' . $_SESSION['message'] . '",
+                    icon: "' . $_SESSION['status'] . '",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    window.location.href = "Addnewuser.php";
+                });
+            </script>';
+            
+            // Clear session variables after displaying the message
+            unset($_SESSION['status']);
+            unset($_SESSION['message']);
+        }
+?>
 
 
 

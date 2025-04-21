@@ -1,5 +1,5 @@
 <?php
-session_start(); // enable session
+session_start(); // Enable session
 include('db_connect.php');
 
 // Collect and sanitize input
@@ -11,10 +11,23 @@ $role_id = mysqli_real_escape_string($conn, $_POST['role']); // Optional if role
 // Set current time (optional, if Update_time is required)
 $update_time = date("Y-m-d H:i:s");
 
-// Insert user
+// Validate if email already exists
+$email_check_query = "SELECT * FROM user WHERE Email = '$email' LIMIT 1";
+$email_check_result = mysqli_query($conn, $email_check_query);
+$email_check_row = mysqli_fetch_assoc($email_check_result);
+
+if ($email_check_row) {
+    // Email already exists
+    $_SESSION['status'] = "error";
+    $_SESSION['message'] = "This email is already in use. Please use a different email address.";
+    mysqli_close($conn);
+    header("Location: Addnewuser.php");
+    exit;
+}
+
+// Insert new user if email does not exist
 $sql = "INSERT INTO user (User_name, Email, Password, Update_time)
         VALUES ('$username', '$email', '$password', '$update_time')";
-
 
 if (mysqli_query($conn, $sql)) {
     $_SESSION['status'] = "success";
@@ -23,6 +36,7 @@ if (mysqli_query($conn, $sql)) {
     $_SESSION['status'] = "error";
     $_SESSION['message'] = "Failed to add user: " . mysqli_error($conn);
 }
+
 mysqli_close($conn);
 
 // Redirect back to the form
