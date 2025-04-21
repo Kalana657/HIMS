@@ -1,3 +1,14 @@
+<?php
+      // dashboard.php
+      session_start();
+      if (!isset($_SESSION['user_id'])) {
+          header("Location: login.php");
+          exit;
+      }
+ ?>
+
+
+
 <!doctype html>
 <html lang="en">
   <!--begin::Head-->
@@ -122,7 +133,8 @@
       <!--begin::App Main-->
       <main class="app-main">
 
-
+     
+      <h3>Welcome, <?= $_SESSION['username']; ?>!</h3>
 
       </main>
       <!--end::App Main-->

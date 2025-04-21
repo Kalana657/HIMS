@@ -41,6 +41,7 @@
               <div class="form-floating flex-grow-1">
                 <input
                   id="loginEmail"
+                  name="email"
                   type="text"
                   class="form-control"
                   placeholder="name@example.com"
@@ -55,6 +56,7 @@
               <div class="form-floating flex-grow-1">
                 <input
                   id="loginPassword"
+                  name="password"
                   type="password"
                   class="form-control"
                   placeholder="Password"
