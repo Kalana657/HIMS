@@ -27,7 +27,15 @@ if ($result && mysqli_num_rows($result) === 1) {
                     VALUES ('$user_id', '$ip_address', '$device_info')";
         mysqli_query($conn, $log_sql);
 
-        // Redirect with success SweetAlert
+        // redirect  based on Role_id
+        $redirect_url = "dist/pages/Admin/dsshboard.php"; // default
+        if ($user['Role_id'] == 1) {
+            $redirect_url = "dist/pages/inventoryManger/dsshboard.php";
+        } else if ($user['Role_id'] == 3) {
+            $redirect_url = "dist/pages/Admin/dsshboard.php";
+        }
+
+        // Redirect with SweetAlert
         echo '
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
@@ -36,7 +44,7 @@ if ($result && mysqli_num_rows($result) === 1) {
             text: "Welcome, ' . $user['User_name'] . '!",
             icon: "success"
         }).then(() => {
-            window.location.href = "dist/pages/Admin/dsshboard.php"; // Your dashboard page
+            window.location.href = "' . $redirect_url . '";
         });
         </script>';
         exit;
