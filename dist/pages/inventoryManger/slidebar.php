@@ -27,12 +27,13 @@
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="Addnewuser.php" class="nav-link">
-                      <i class="nav-icon 	bi bi-person-plus"></i>
-                      <p>Add New User</p>
-                    </a>
-                  </li>
+                <li class="nav-item">
+                  <a href="Addnewitem.php" class="nav-link">
+                    <i class="nav-icon bi bi-plus-square"></i>
+                    <p>Add New Item</p>
+                  </a>
+                </li>
+
                   <li class="nav-item">
                     <a href="Addnewrole.php" class="nav-link">
                     <i class="nav-icon bi bi-person-gear"></i>
