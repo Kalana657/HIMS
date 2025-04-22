@@ -26,8 +26,8 @@ if ($email_check_row) {
 }
 
 // Insert new user if email does not exist
-$sql = "INSERT INTO user (User_name, Email, Password, Update_time)
-        VALUES ('$username', '$email', '$password', '$update_time')";
+$sql = "INSERT INTO user (User_name, Email, Password, Role_id,Update_time)
+        VALUES ('$username', '$email', '$password','$role_id','$update_time')";
 
 if (mysqli_query($conn, $sql)) {
     $_SESSION['status'] = "success";
