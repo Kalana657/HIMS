@@ -198,6 +198,7 @@ session_start();
                     <label for="quantity">Quantity</label>
                     <input type="number" id="quantity" name="quantity" class="form-control" required>
                 </div>
+               
 
                 <!-- Category Dropdown -->
                 <div class="form-group">
@@ -242,6 +243,31 @@ session_start();
                         <!-- Subtypes will be loaded based on selected type -->
                     </select>
                 </div>
+                     
+                 <!-- Drug Fields: Only visible if category_id == 2 -->
+                    <div id="drug-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="bn_number">BN Number</label>
+                            <input type="text" id="bn_number" name="bn_number" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="manufacture_date">Manufacture Date</label>
+                            <input type="date" id="manufacture_date" name="manufacture_date" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="expiry_date">Expiry Date</label>
+                            <input type="date" id="expiry_date" name="expiry_date" class="form-control">
+                        </div>
+                    </div>
+
+
+
+
+
+
+
 
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-success mt-3">Request Add Item</button>
@@ -250,7 +276,8 @@ session_start();
     </div>
 </div>
 
-
+if drug - bn number and exp date
+if general - warrenty date to from
 
 <script>
 
@@ -289,6 +316,40 @@ $(document).ready(function() {
     }
   });
 });
+
+
+$('#category').on('change', function() {
+    let categoryID = $(this).val();
+
+    // Show/Hide drug-related fields
+    if (categoryID == 2) {
+        $('#drug-fields').show();
+    } else {
+        $('#drug-fields').hide();
+        $('#bn_number').val('');
+        $('#manufacture_date').val('');
+        $('#expiry_date').val('');
+    }
+
+    // Load types for selected category
+    if (categoryID) {
+        $.ajax({
+            type: 'POST',
+            url: 'get_types.php',
+            data: { category_id: categoryID },
+            success: function(html) {
+                $('#type').html(html);
+                $('#subtype').html('<option value="">Select Subtype</option>');
+            }
+        });
+    } else {
+        $('#type').html('<option value="">Select Type</option>');
+        $('#subtype').html('<option value="">Select Subtype</option>');
+    }
+});
+
+
+
 
 
 </script>
