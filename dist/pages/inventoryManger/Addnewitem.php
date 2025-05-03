@@ -263,6 +263,26 @@ session_start();
                     </div>
 
 
+                <!-- Warranty & Vendor Fields: Only visible if category_id == 1 or 4 -->
+                <div id="warranty-fields" style="display: none;">
+                    <div class="form-group">
+                        <label for="warranty_from">Warranty From Date</label>
+                        <input type="date" id="warranty_from" name="warranty_from" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="warranty_to">Warranty To Date</label>
+                        <input type="date" id="warranty_to" name="warranty_to" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                    <label for="vendor_id">Vendor Name</label>
+                    <select id="vendor_id" name="vendor_id" class="form-control">
+                      <option value="">-- Select Vendor --</option>
+                      <!-- Options loaded via AJAX -->
+                    </select>
+                  </div>
+                </div>
 
 
 
@@ -281,6 +301,7 @@ if general - warrenty date to from
 
 <script>
 
+// multi drop down list
 $(document).ready(function() {
   $('#category').on('change', function() {
     let categoryID = $(this).val();
@@ -317,11 +338,11 @@ $(document).ready(function() {
   });
 });
 
-
+// show the BN number and other columes
 $('#category').on('change', function() {
     let categoryID = $(this).val();
 
-    // Show/Hide drug-related fields
+  
     if (categoryID == 2) {
         $('#drug-fields').show();
     } else {
@@ -330,8 +351,6 @@ $('#category').on('change', function() {
         $('#manufacture_date').val('');
         $('#expiry_date').val('');
     }
-
-    // Load types for selected category
     if (categoryID) {
         $.ajax({
             type: 'POST',
@@ -349,6 +368,55 @@ $('#category').on('change', function() {
 });
 
 
+$('#category').on('change', function() {
+    let categoryID = $(this).val();
+
+    // Show/Hide Drug Fields
+    if (categoryID == 2) {
+        $('#drug-fields').show();
+    } else {
+        $('#drug-fields').hide();
+        $('#bn_number').val('');
+        $('#manufacture_date').val('');
+        $('#expiry_date').val('');
+    }
+
+    // Show/Hide Warranty & Vendor Fields
+    if (categoryID == 1 || categoryID == 4) {
+        $('#warranty-fields').show();
+    } else {
+        $('#warranty-fields').hide();
+        $('#warranty_from').val('');
+        $('#warranty_to').val('');
+        $('#vendor_id').val('');
+    }
+
+    // Load Types
+    if (categoryID) {
+        $.ajax({
+            type: 'POST',
+            url: 'get_types.php',
+            data: { category_id: categoryID },
+            success: function(html) {
+                $('#type').html(html);
+                $('#subtype').html('<option value="">Select Subtype</option>');
+            }
+        });
+
+        // Load Vendors
+        $.ajax({
+            type: 'POST',
+            url: 'get_vendors.php',
+            data: { category_id: categoryID },
+            success: function(html) {
+                $('#vendor_id').html(html);
+            }
+        });
+    } else {
+        $('#type').html('<option value="">Select Type</option>');
+        $('#subtype').html('<option value="">Select Subtype</option>');
+    }
+});
 
 
 
