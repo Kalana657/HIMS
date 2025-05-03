@@ -84,6 +84,12 @@ session_start();
     />
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+
+
+
+
+
   </head>
   <!--end::Head-->
   <!--begin::Body-->
@@ -242,8 +248,28 @@ session_start();
                         <option value="">-- Select Subtype --</option>
                         <!-- Subtypes will be loaded based on selected type -->
                     </select>
+                
+
                 </div>
-                     
+             
+
+                <div id="suggestion-fields" style="display: none;">
+                    <div class="form-group">
+                        <label for="suggestion_notes">Related Inventory Items</label>
+                        <div id="item-suggestions" class="border p-3 mb-3" style="max-height: 200px; overflow-y: auto;">
+                            <!-- Suggestions will appear here -->
+                            <p class="text-muted">Select a subtype to view related items</p>
+                        </div>
+                        <textarea id="suggestion_notes" name="suggestion_notes" class="form-control" 
+                                  placeholder="Add any additional notes or suggestions..."></textarea>
+                    </div>
+              </div>
+
+
+
+
+
+   
                  <!-- Drug Fields: Only visible if category_id == 2 -->
                     <div id="drug-fields" style="display: none;">
                         <div class="form-group">
@@ -418,6 +444,36 @@ $('#category').on('change', function() {
     }
 });
 
+// Suggtion field
+
+$('#subtype').on('change', function () {
+    const categoryID = $('#category').val();
+    const typeID = $('#type').val();
+    const subtypeID = $(this).val();
+
+    if (categoryID && typeID && subtypeID) {
+        $.ajax({
+            type: 'POST',
+            url: 'get_related_items.php',
+            data: {
+                category_id: categoryID,
+                type_id: typeID,
+                subtype_id: subtypeID
+            },
+            success: function (response) {
+                $('#item-suggestions').html(response);
+                $('#suggestion-fields').show();
+            },
+            error: function () {
+                $('#item-suggestions').html('<p class="text-danger">Error fetching data.</p>');
+                $('#suggestion-fields').show();
+            }
+        });
+    } else {
+        $('#item-suggestions').html('<p class="text-muted">Select a subtype to view related items</p>');
+        $('#suggestion-fields').hide();
+    }
+});
 
 
 </script>

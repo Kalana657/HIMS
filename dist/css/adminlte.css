@@ -15386,6 +15386,25 @@ html.maximized-card {
   padding: 1rem;
 }
 
+#subtype-suggestions {
+  position: absolute;
+  z-index: 1000;
+  width: 100%;              /* Match the input width */
+  max-height: 300px;        /* Bigger box */
+  overflow-y: auto;         /* Scroll if too many items */
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+}
+#subtype-suggestions .list-group-item {
+  padding: 10px 15px;
+  cursor: pointer;
+}
+#subtype-suggestions .list-group-item:hover {
+  background-color: #f1f1f1;
+}
 
 
 /*# sourceMappingURL=adminlte.css.map */
