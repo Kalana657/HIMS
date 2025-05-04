@@ -12,11 +12,25 @@ if ($category_id && $type_id && $subtype_id) {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
+
+        echo '<div class="mb-2">
+        <input type="checkbox" name="no_related_item" value="1">
+        <strong>No Related Item</strong><br>
+        </div><hr>';
+
+
+
+
         while ($row = $result->fetch_assoc()) {
-            echo '<div class="mb-2">';
-            echo '<strong>' . htmlspecialchars($row['item_name']) . '</strong><br>';
-            echo '<small>' . htmlspecialchars($row['quantity']) . '</small>';
-            echo '</div><hr>';
+           
+    
+            echo '<div class="mb-2">
+            <input type="checkbox" name="item_' . htmlspecialchars($row['item_id']) . '" value="' . htmlspecialchars($row['item_id']) . '">
+            <strong>' . htmlspecialchars($row['item_name']) . '</strong>
+            <strong>' . htmlspecialchars($row['quantity']) . '</strong>
+          </div><hr>';
+    
+    
         }
     } else {
         echo '<p class="text-muted">No related items found.</p>';
