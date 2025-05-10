@@ -174,6 +174,7 @@ session_start();
         }
 ?>
 
+
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header">
@@ -209,7 +210,7 @@ session_start();
                 <!-- Category Dropdown -->
                 <div class="form-group">
                     <label>Item Category</label>
-                    <select id="category" class="form-control">
+                    <select id="category" class="form-control" name="category">
                         <option value="">-- Select Category --</option>
                         
                 
@@ -252,19 +253,21 @@ session_start();
 
                 </div>
              
+                <div id="item-suggestions" class="border p-3 mb-3" style="max-height: 200px; overflow-y: auto;">
+                      <?php
+                      // Assuming $result is already fetched from the database
+                      while ($row = mysqli_fetch_assoc($result)) {
+                          echo '<div class="mb-2">
+                                  <input type="checkbox" name="item_ids[]" value="' . htmlspecialchars($row['item_id']) . '">
+                                  <strong>' . htmlspecialchars($row['item_name']) . '</strong><br>
+                                  Quantity: <strong>' . htmlspecialchars($row['quantity']) . '</strong><br>
+                              
+                                </div><hr>';
+                      }
+                      ?>
+                </div>
 
-                <div id="suggestion-fields" style="display: none;">
-                    <div class="form-group">
-                        <label for="suggestion_notes">Related Inventory Items</label>
-                        <div id="item-suggestions" class="border p-3 mb-3" style="max-height: 200px; overflow-y: auto;">
-                            <!-- Suggestions will appear here -->
-                            <p class="text-muted">Select a subtype to view related items</p>
-                        </div>
-                        <textarea id="suggestion_notes" name="suggestion_notes" class="form-control" 
-                                  placeholder="Add any additional notes or suggestions..."></textarea>
-                    </div>
-              </div>
-
+             
 
 
 
@@ -274,6 +277,7 @@ session_start();
                     <div id="drug-fields" style="display: none;">
                         <div class="form-group">
                             <label for="bn_number">BN Number</label>
+                         
                             <input type="text" id="bn_number" name="bn_number" class="form-control">
                         </div>
 
@@ -321,9 +325,8 @@ session_start();
         </div>
     </div>
 </div>
+      
 
-if drug - bn number and exp date
-if general - warrenty date to from
 
 <script>
 
