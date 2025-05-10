@@ -19,27 +19,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $warranty_to = $_POST['warranty_to'] ?? '';
     $vendor_id = $_POST['vendor_id'] ?? '';
     $status = 0;
+   
+    $related_items = $_POST['item_ids'] ?? [];
 
-    // Handle item_ids array (checkboxes or multi-select)
-    $selected_items = isset($_POST['item_ids']) ? implode(',', $_POST['item_ids']) : '';
+   
+    $related_item_string = implode(',', $related_items);
 
-    // Prepare SQL Query to insert the data
-    $sql = "INSERT INTO inventory_item (item_name, description, serial_number, quantity, category_id, type_id, subtype_id, bn_number, manufacture_date, expiry_date, warranty_from, warranty_to, vendor_id, status)
-            VALUES ('$item_name', '$description', '$serial_number', '$quantity', '$category_id', '$type_id', '$subtype_id', '$bn_number', '$manufacture_date', '$expiry_date', '$warranty_from', '$warranty_to', '$vendor_id', '$status')";
+   
+    $related_item_string;
 
-    // Debugging: Check the query being executed
-    echo $sql;  // This will show the SQL query being run
+   
+    $sql = "INSERT INTO inventory_item (item_name, description, serial_number, quantity, category_id, type_id, subtype_id, bn_number, manufacture_date, expiry_date, warranty_from, warranty_to, vendor_id, status,related_item_id)
+            VALUES ('$item_name', '$description', '$serial_number', '$quantity', '$category_id', '$type_id', '$subtype_id', '$bn_number', '$manufacture_date', '$expiry_date', '$warranty_from', '$warranty_to', '$vendor_id', '$status','$related_item_string')";
+
     
-    // Execute the query
+    echo $sql;  
+  
     if (mysqli_query($conn, $sql)) {
         $_SESSION['status'] = 'success';
         $_SESSION['message'] = 'Item added successfully!';
     } else {
         $_SESSION['status'] = 'error';
-        $_SESSION['message'] = 'Failed to add item. ' . mysqli_error($conn);  // Show error message
+        $_SESSION['message'] = 'Failed to add item. ' . mysqli_error($conn);  
     }
 
-    // Redirect back to the form (after inserting the data)
+  
     header('Location: Addnewitem.php');
     exit();
 }

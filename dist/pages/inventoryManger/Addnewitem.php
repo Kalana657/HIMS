@@ -254,18 +254,17 @@ session_start();
                 </div>
              
                 <div id="item-suggestions" class="border p-3 mb-3" style="max-height: 200px; overflow-y: auto;">
-                      <?php
-                      // Assuming $result is already fetched from the database
-                      while ($row = mysqli_fetch_assoc($result)) {
-                          echo '<div class="mb-2">
-                                  <input type="checkbox" name="item_ids[]" value="' . htmlspecialchars($row['item_id']) . '">
-                                  <strong>' . htmlspecialchars($row['item_name']) . '</strong><br>
-                                  Quantity: <strong>' . htmlspecialchars($row['quantity']) . '</strong><br>
-                              
-                                </div><hr>';
-                      }
-                      ?>
-                </div>
+                  <?php
+                  // Assuming $result is already fetched from the database
+                  while ($row = mysqli_fetch_assoc($result)) {
+                      echo '<div class="mb-2">
+                              <input type="checkbox" name="item_ids[]" value="' . htmlspecialchars($row['item_id']) . '">
+                              <strong>' . htmlspecialchars($row['item_name']) . '</strong><br>
+                              Quantity: <strong>' . htmlspecialchars($row['quantity']) . '</strong><br>
+                            </div><hr>';
+                  }
+                  ?>
+              </div>
 
              
 
