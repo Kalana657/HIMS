@@ -1,8 +1,7 @@
 <?php
 session_start();
 
-Warfare
-2025
+
 ?>
 
 
@@ -181,72 +180,99 @@ Warfare
     <div class="card-header">
       <h5 class="mb-0">Inventory Add Requests Table</h5>
     </div>
-    <?php
+                        <?php
+                    include('db_connect.php');
+
+                    $query = "SELECT * FROM inventory_item ORDER BY created_at DESC";
+                    $result = mysqli_query($conn, $query);
+                    ?>
+
+                    <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Serial No.</th>
+                        <th>Qty</th>
+                        <th>Category</th>
+                        <th>Type</th>
+                        <th>Subtype</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                        <tr>
+                            <td><?= htmlspecialchars($row['item_name']) ?></td>
+                            <td><?= htmlspecialchars($row['description']) ?></td>
+                            <td><?= htmlspecialchars($row['serial_number']) ?></td>
+                            <td><?= htmlspecialchars($row['quantity']) ?></td>
+                            <td><?= htmlspecialchars($row['category_id']) ?></td>
+                            <td><?= htmlspecialchars($row['type_id']) ?></td>
+                            <td><?= htmlspecialchars($row['subtype_id']) ?></td>
+                            <td>
+                            <?php
+                                if ($row['status'] == 1) {
+                                echo '<span class="badge badge-success">Approved</span>';
+                                } elseif ($row['status'] == 0) {
+                                echo '<span class="badge badge-warning">Pending</span>';
+                                } else {
+                                echo '<span class="badge badge-danger">Rejected</span>';
+                                }
+                            ?>
+                            </td>
+                            <td>
+                             
+                                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#detailsModal<?= $row['item_id'] ?>" title="View More">
+                                <i class="bi bi-eye-fill"></i>
+                                </button>
+
+                                <button class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="Approve">
+                                <i class="bi bi-check-circle-fill"></i>
+                                </button>
+
+                               
+                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Reject">
+                                <i class="bi bi-x-circle-fill"></i>
+                                </button>
 
 
-$query = "SELECT * FROM inventory_item ORDER BY created_at DESC";
-$result = mysqli_query($conn, $query);
-?>
+                            </td>
+                            
+                        </tr>
 
-<table class="table table-bordered table-striped">
-  <thead class="thead-dark">
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Description</th>
-      <th>Serial No.</th>
-      <th>Qty</th>
-      <th>Category</th>
-      <th>Type</th>
-      <th>Subtype</th>
-      <th>Batch No.</th>
-      <th>Manufacture</th>
-      <th>Expiry</th>
-      <th>Warranty From</th>
-      <th>Warranty To</th>
-      <th>Vendor</th>
-      <th>Status</th>
-      <th>Related Item</th>
-      <th>Created At</th>
-      <th>Updated At</th>
-    </tr>
-  </thead>
-  <tbody>
-    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-      <tr>
-        <td><?= htmlspecialchars($row['item_id']) ?></td>
-        <td><?= htmlspecialchars($row['item_name']) ?></td>
-        <td><?= htmlspecialchars($row['description']) ?></td>
-        <td><?= htmlspecialchars($row['serial_number']) ?></td>
-        <td><?= htmlspecialchars($row['quantity']) ?></td>
-        <td><?= htmlspecialchars($row['category_id']) ?></td>
-        <td><?= htmlspecialchars($row['type_id']) ?></td>
-        <td><?= htmlspecialchars($row['subtype_id']) ?></td>
-        <td><?= htmlspecialchars($row['bn_number']) ?></td>
-        <td><?= htmlspecialchars($row['manufacture_date']) ?></td>
-        <td><?= htmlspecialchars($row['expiry_date']) ?></td>
-        <td><?= htmlspecialchars($row['warranty_from']) ?></td>
-        <td><?= htmlspecialchars($row['warranty_to']) ?></td>
-        <td><?= htmlspecialchars($row['vendor_id']) ?></td>
-        <td>
-          <?php
-            if ($row['status'] == 1) {
-              echo '<span class="badge badge-success">Approved</span>';
-            } elseif ($row['status'] == 0) {
-              echo '<span class="badge badge-warning">Pending</span>';
-            } else {
-              echo '<span class="badge badge-danger">Rejected</span>';
-            }
-          ?>
-        </td>
-        <td><?= htmlspecialchars($row['related_item_id']) ?></td>
-        <td><?= htmlspecialchars($row['created_at']) ?></td>
-        <td><?= htmlspecialchars($row['updated_at']) ?></td>
-      </tr>
-    <?php } ?>
-  </tbody>
-</table>
-
+                        <!-- Modal -->
+                        <div class="modal fade" id="detailsModal<?= $row['item_id'] ?>" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel<?= $row['item_id'] ?>" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h5 class="modal-title" id="detailsModalLabel<?= $row['item_id'] ?>">Item Full Details</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <div class="modal-body">
+                                <p><strong>ID:</strong> <?= $row['item_id'] ?></p>
+                                <p><strong>Batch No:</strong> <?= $row['bn_number'] ?></p>
+                                <p><strong>Manufacture Date:</strong> <?= $row['manufacture_date'] ?></p>
+                                <p><strong>Expiry Date:</strong> <?= $row['expiry_date'] ?></p>
+                                <p><strong>Warranty From:</strong> <?= $row['warranty_from'] ?></p>
+                                <p><strong>Warranty To:</strong> <?= $row['warranty_to'] ?></p>
+                                <p><strong>Vendor:</strong> <?= $row['vendor_id'] ?></p>
+                                <p><strong>Related Item:</strong> <?= $row['related_item_id'] ?></p>
+                                <p><strong>Created At:</strong> <?= $row['created_at'] ?></p>
+                                <p><strong>Updated At:</strong> <?= $row['updated_at'] ?></p>
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <?php } ?>
+                    </tbody>
+                    </table>
 
 
 
@@ -256,8 +282,12 @@ $result = mysqli_query($conn, $query);
 </div>
 
       </main>
-      <!--end::App Main-->
-      <!--begin::Footer-->
+      <script>
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+     </script>
+
       <footer class="app-footer">
       
       </footer>
