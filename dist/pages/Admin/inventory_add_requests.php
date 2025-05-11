@@ -228,48 +228,69 @@ session_start();
                                 <i class="bi bi-eye-fill"></i>
                                 </button>
 
-                                <button class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="Approve">
-                                <i class="bi bi-check-circle-fill"></i>
-                                </button>
-
-                               
-                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Reject">
-                                <i class="bi bi-x-circle-fill"></i>
-                                </button>
+                              
 
 
                             </td>
                             
                         </tr>
 
-                        <!-- Modal -->
-                        <div class="modal fade" id="detailsModal<?= $row['item_id'] ?>" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel<?= $row['item_id'] ?>" aria-hidden="true">
-                            <div class="modal-dialog modal-lg" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                <h5 class="modal-title" id="detailsModalLabel<?= $row['item_id'] ?>">Item Full Details</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                      
+                      <!-- View More Modal -->
+                    <div class="modal fade" id="detailsModal<?= $row['item_id'] ?>" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel<?= $row['item_id'] ?>" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <form action="process_approval.php" method="POST"> <!-- You can adjust this file -->
+                        <input type="hidden" name="item_id" value="<?= $row['item_id'] ?>">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="detailsModalLabel<?= $row['item_id'] ?>">Item Details - <?= htmlspecialchars($row['item_name']) ?></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span>&times;</span>
+                            </button>
+                            </div>
+                            
+                            <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                <strong>Description:</strong><br><?= htmlspecialchars($row['description']) ?><br><br>
+                                <strong>Serial Number:</strong><br><?= htmlspecialchars($row['serial_number']) ?><br><br>
+                                <strong>Batch No:</strong><br><?= htmlspecialchars($row['bn_number']) ?><br><br>
+                                <strong>Vendor ID:</strong><br><?= htmlspecialchars($row['vendor_id']) ?><br><br>
+                                <strong>Warranty:</strong><br><?= htmlspecialchars($row['warranty_from']) ?> to <?= htmlspecialchars($row['warranty_to']) ?><br><br>
                                 </div>
-                                <div class="modal-body">
-                                <p><strong>ID:</strong> <?= $row['item_id'] ?></p>
-                                <p><strong>Batch No:</strong> <?= $row['bn_number'] ?></p>
-                                <p><strong>Manufacture Date:</strong> <?= $row['manufacture_date'] ?></p>
-                                <p><strong>Expiry Date:</strong> <?= $row['expiry_date'] ?></p>
-                                <p><strong>Warranty From:</strong> <?= $row['warranty_from'] ?></p>
-                                <p><strong>Warranty To:</strong> <?= $row['warranty_to'] ?></p>
-                                <p><strong>Vendor:</strong> <?= $row['vendor_id'] ?></p>
-                                <p><strong>Related Item:</strong> <?= $row['related_item_id'] ?></p>
-                                <p><strong>Created At:</strong> <?= $row['created_at'] ?></p>
-                                <p><strong>Updated At:</strong> <?= $row['updated_at'] ?></p>
+                                <div class="col-md-6">
+                                <strong>Manufacture Date:</strong><br><?= htmlspecialchars($row['manufacture_date']) ?><br><br>
+                                <strong>Expiry Date:</strong><br><?= htmlspecialchars($row['expiry_date']) ?><br><br>
+                                <strong>Created At:</strong><br><?= htmlspecialchars($row['created_at']) ?><br><br>
+                                <strong>Updated At:</strong><br><?= htmlspecialchars($row['updated_at']) ?><br><br>
+
+                                <div class="form-group">
+                                    <label for="quantity<?= $row['item_id'] ?>"><strong>Edit Quantity</strong></label>
+                                    <input type="number" name="quantity" id="quantity<?= $row['item_id'] ?>" value="<?= htmlspecialchars($row['quantity']) ?>" class="form-control" required>
                                 </div>
-                                <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
+
+                            <div class="form-group">
+                                <label for="comment<?= $row['item_id'] ?>"><strong>Admin Comment</strong></label>
+                                <textarea name="comment" id="comment<?= $row['item_id'] ?>" class="form-control" rows="3" placeholder="Enter any remarks..."></textarea>
+                            </div>
+                            </div>
+
+                            <div class="modal-footer">
+                            <button type="submit" name="reject" class="btn btn-danger">
+                                <i class="bi bi-x-circle-fill"></i> Reject
+                            </button>
+                            <button type="submit" name="approve" class="btn btn-success">
+                                <i class="bi bi-check-circle-fill"></i> Approve
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             </div>
                         </div>
+                        </form>
+                    </div>
+                    </div>
+
                         <?php } ?>
                     </tbody>
                     </table>
