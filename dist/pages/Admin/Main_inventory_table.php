@@ -12,7 +12,7 @@ session_start();
   <!--begin::Head-->
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>HIMS ADMIN  | Inventory Add Requests Table</title>
+    <title>HIMS ADMIN  | Main Inventory  Table</title>
     <!--begin::Primary Meta Tags-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="title" content="AdminLTE v4 | Dashboard" />
@@ -183,30 +183,7 @@ session_start();
                         <?php
                     include('db_connect.php');
 
-                   $query = "
-                   SELECT 
-                        inventory_item.*,
-                        inventory_category.*,
-                        inventory_type.*,
-                        inventory_subtype.*,
-                        item_approvals.*
-                    
-                    
-                    FROM 
-                        inventory_item
-                    JOIN 
-                        inventory_category ON inventory_item.category_id = inventory_category.category_id
-                    JOIN 
-                        inventory_type ON inventory_item.type_id = inventory_type.type_id
-                    JOIN 
-                        inventory_subtype ON inventory_item.subtype_id = inventory_subtype.subtype_id
-                    LEFT JOIN
-                        item_approvals ON inventory_item.related_item_id=item_approvals.approval_id
-
-                    ORDER BY 
-                        inventory_item.created_at DESC;
-                    ";
-
+                    $query = "SELECT * FROM inventory_item ORDER BY created_at DESC";
                     $result = mysqli_query($conn, $query);
                     ?>
 
@@ -231,10 +208,9 @@ session_start();
                             <td><?= htmlspecialchars($row['description']) ?></td>
                             <td><?= htmlspecialchars($row['serial_number']) ?></td>
                             <td><?= htmlspecialchars($row['quantity']) ?></td>
-                            <td><?= htmlspecialchars($row['category_name']) ?></td>
-                            <td><?= htmlspecialchars($row['type_name']) ?></td>
-                            <td><?= htmlspecialchars($row['subtype_name']) ?></td>
-
+                            <td><?= htmlspecialchars($row['category_id']) ?></td>
+                            <td><?= htmlspecialchars($row['type_id']) ?></td>
+                            <td><?= htmlspecialchars($row['subtype_id']) ?></td>
                             <td>
                             <?php
                                 if ($row['status'] == 1) {
