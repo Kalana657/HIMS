@@ -288,13 +288,13 @@ session_start();
                                 <strong>Created At:</strong><br><?= htmlspecialchars($row['created_at']) ?><br><br>
                                 <strong>Updated At:</strong><br><?= htmlspecialchars($row['updated_at']) ?><br><br>
                                 
-                                 <?php
+                                <?php
                                     $approvedQty = $row['approved_quantity'];
                                     $requestedQty = $row['quantity'];
-                                    
+
                                     $qtyClass = '';
                                     $qtyNote = '';
-                                    
+
                                     if ($approvedQty > $requestedQty) {
                                         $qtyClass = 'bg-warning text-dark';
                                         $qtyNote = 'Less than requested';
@@ -305,20 +305,51 @@ session_start();
                                         $qtyClass = 'bg-success text-white';
                                         $qtyNote = 'Exact as requested';
                                     }
-                              
-                                ?>
+                                    ?>
 
-                                <div class="form-group">
-                                    <label><strong>Approved Quantity</strong></label>
-                                    <input type="text" class="form-control <?= $qtyClass ?>" value="<?= htmlspecialchars($approvedQty) ?>" readonly>
-                                    <small class="form-text"><?= $qtyNote ?></small>
-                                </div>
+                                    <div class="form-group">
+                                        <label><strong>Approved Quantity</strong></label>
+                                        <input type="text" class="form-control <?= $qtyClass ?>" value="<?= htmlspecialchars($approvedQty) ?>" readonly>
+                                        <small class="form-text"><?= $qtyNote ?></small>
+                                    </div>
 
-                                <div class="form-group">
-                                    <label for="quantity<?= $row['item_id'] ?>"><strong>Edit Requested Quantity</strong></label>
-                                    <input type="number" name="quantity" id="quantity<?= $row['item_id'] ?>" value="<?= htmlspecialchars($requestedQty) ?>" class="form-control" required>
-                                </div>
-                                
+                                    <div class="form-group">
+                                        <label for="quantity<?= $row['item_id'] ?>"><strong>Edit Requested Quantity</strong></label>
+                                        <input type="number" 
+                                            name="quantity" 
+                                            id="quantity<?= $row['item_id'] ?>" 
+                                            value="<?= htmlspecialchars($requestedQty) ?>" 
+                                            class="form-control"
+                                            max="<?= $approvedQty ?>" 
+                                            required 
+                                            oninput="validateQty<?= $row['item_id'] ?>()">
+                                        <small id="errorMsg<?= $row['item_id'] ?>" class="text-danger" style="display:none;">Requested quantity cannot exceed approved quantity!</small>
+                                    </div>
+
+                                    <script>
+                                    function validateQty<?= $row['item_id'] ?>() {
+                                        var input = document.getElementById('quantity<?= $row['item_id'] ?>');
+                                        var errorMsg = document.getElementById('errorMsg<?= $row['item_id'] ?>');
+                                        var approveBtn = document.querySelector('#detailsModal<?= $row['item_id'] ?> button[name="approve"]');
+                                        var approvedQty = <?= $approvedQty ?>;
+                                        
+                                        if (parseInt(input.value) > approvedQty) {
+                                            errorMsg.style.display = 'block';
+                                            input.classList.add('is-invalid');
+                                            approveBtn.disabled = true;
+                                        } else {
+                                            errorMsg.style.display = 'none';
+                                            input.classList.remove('is-invalid');
+                                            approveBtn.disabled = false;
+                                        }
+                                    }
+
+                                    // Initialize check on modal open (optional safety check)
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        validateQty<?= $row['item_id'] ?>();
+                                    });
+                                    </script>
+
 
 
 
