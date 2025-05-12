@@ -247,7 +247,7 @@ session_start();
                             ?>
                             </td>
                             <td>
-                             
+                               
                                 <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#detailsModal<?= $row['item_id'] ?>" title="View More">
                                 <i class="bi bi-eye-fill"></i>
                                 </button>
@@ -287,11 +287,42 @@ session_start();
                                 <strong>Expiry Date:</strong><br><?= htmlspecialchars($row['expiry_date']) ?><br><br>
                                 <strong>Created At:</strong><br><?= htmlspecialchars($row['created_at']) ?><br><br>
                                 <strong>Updated At:</strong><br><?= htmlspecialchars($row['updated_at']) ?><br><br>
+                                
+                                 <?php
+                                    $approvedQty = $row['approved_quantity'];
+                                    $requestedQty = $row['quantity'];
+                                    
+                                    $qtyClass = '';
+                                    $qtyNote = '';
+                                    
+                                    if ($approvedQty > $requestedQty) {
+                                        $qtyClass = 'bg-warning text-dark';
+                                        $qtyNote = 'Less than requested';
+                                    } elseif ($approvedQty < $requestedQty) {
+                                        $qtyClass = 'bg-danger text-white';
+                                        $qtyNote = 'More than requested';
+                                    } else {
+                                        $qtyClass = 'bg-success text-white';
+                                        $qtyNote = 'Exact as requested';
+                                    }
+                              
+                                ?>
 
                                 <div class="form-group">
-                                    <label for="quantity<?= $row['item_id'] ?>"><strong>Edit Quantity</strong></label>
-                                    <input type="number" name="quantity" id="quantity<?= $row['item_id'] ?>" value="<?= htmlspecialchars($row['quantity']) ?>" class="form-control" required>
+                                    <label><strong>Approved Quantity</strong></label>
+                                    <input type="text" class="form-control <?= $qtyClass ?>" value="<?= htmlspecialchars($approvedQty) ?>" readonly>
+                                    <small class="form-text"><?= $qtyNote ?></small>
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="quantity<?= $row['item_id'] ?>"><strong>Edit Requested Quantity</strong></label>
+                                    <input type="number" name="quantity" id="quantity<?= $row['item_id'] ?>" value="<?= htmlspecialchars($requestedQty) ?>" class="form-control" required>
+                                </div>
+                                
+
+
+
+                                
                                 </div>
                             </div>
 
