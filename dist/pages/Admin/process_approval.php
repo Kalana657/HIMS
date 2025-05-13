@@ -20,31 +20,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // ✅ Check if item already exists in item_approvals table
-    $check_stmt = $conn->prepare("SELECT approval_id FROM item_approvals WHERE item_id = ?");
+   // Check if item already exists in item_approvals table
+    $check_stmt = $conn->prepare("SELECT approval_id FROM item_approvals WHERE item_idat = ?");
     $check_stmt->bind_param("i", $item_id);
     $check_stmt->execute();
     $result = $check_stmt->get_result();
 
     if ($result->num_rows > 0) {
-        // Item already exists in approvals
+       
         $_SESSION['status'] = 'error';
         $_SESSION['message'] = 'Item already exists in approval log. Cannot approve again.';
         header("Location: inventory_add_requests.php");
         exit();
     }
 
-    // ✅ Update inventory_item table (always update)
+    // Update inventory_item table 
     $update_inventory = $conn->prepare("UPDATE inventory_item SET quantity = ?, status = ?, updated_at = NOW() WHERE item_id = ?");
     $update_inventory->bind_param("iii", $quantity, $status_code, $item_id);
     $inventory_success = $update_inventory->execute();
 
-    // ✅ Insert into item_approvals table
-    $insert_approval = $conn->prepare("INSERT INTO item_approvals (item_id, approved_quantity, status_approval, comment, created_at) VALUES (?, ?, ?, ?, NOW())");
+    //  Insert into item_approvals table
+    $insert_approval = $conn->prepare("INSERT INTO item_approvals (item_idat, approved_quantity, status_approval, comment, created_at) VALUES (?, ?, ?, ?, NOW())");
     $insert_approval->bind_param("iiss", $item_id, $quantity, $status_code, $comment);
     $approval_success = $insert_approval->execute();
 
-    // ✅ Handle response
+  
     if ($inventory_success && $approval_success) {
         $_SESSION['status'] = 'success';
         $_SESSION['message'] = 'Item ' . $status . ' successfully and saved in approval log.';

@@ -234,7 +234,7 @@ session_start();
                             <td><?= htmlspecialchars($row['category_name']) ?></td>
                             <td><?= htmlspecialchars($row['type_name']) ?></td>
                             <td><?= htmlspecialchars($row['subtype_name']) ?></td>
-
+                          
                             <td>
                             <?php
                                 if ($row['status'] == 1) {
@@ -264,7 +264,7 @@ session_start();
                     <div class="modal fade" id="detailsModal<?= $row['item_id'] ?>" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel<?= $row['item_id'] ?>" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <form action="process_approval.php" method="POST"> <!-- You can adjust this file -->
-                        <input type="hidden" name="item_id" value="<?= $row['item_id'] ?>">
+                        <input type="text" name="item_id" value="<?= $row['item_id'] ?>">
                         <div class="modal-content">
                             <div class="modal-header">
                             <h5 class="modal-title" id="detailsModalLabel<?= $row['item_id'] ?>">Item Details - <?= htmlspecialchars($row['item_name']) ?></h5>
