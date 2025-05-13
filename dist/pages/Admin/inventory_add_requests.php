@@ -157,7 +157,7 @@ session_start();
                     icon: "' . $_SESSION['status'] . '",
                     confirmButtonText: "OK"
                 }).then(() => {
-                    window.location.href = "Addnewuser.php";
+                    window.location.href = "inventory_add_request.php";
                 });
             </script>';
             
