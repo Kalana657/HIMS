@@ -179,6 +179,7 @@ session_start();
   <div class="card shadow-sm">
     <div class="card-header">
       <h5 class="mb-0">Inventory Add Requests Table</h5>
+      
     </div>
                         <?php
                     include('db_connect.php');
@@ -209,6 +210,52 @@ session_start();
 
                     $result = mysqli_query($conn, $query);
                     ?>
+                   <?php
+                    // Fetch categories, types, and subtypes for filters
+                    $categories = mysqli_query($conn, "SELECT * FROM inventory_category");
+                    $types = mysqli_query($conn, "SELECT * FROM inventory_type");
+                    $subtypes = mysqli_query($conn, "SELECT * FROM inventory_subtype");
+                    ?>
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <select id="filterCategory" class="form-control">
+                                <option value="">All Categories</option>
+                                <?php while ($cat = mysqli_fetch_assoc($categories)) { ?>
+                                    <option value="<?= htmlspecialchars($cat['category_name']) ?>"><?= htmlspecialchars($cat['category_name']) ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="filterType" class="form-control">
+                                <option value="">All Types</option>
+                                <?php while ($type = mysqli_fetch_assoc($types)) { ?>
+                                    <option value="<?= htmlspecialchars($type['type_name']) ?>"><?= htmlspecialchars($type['type_name']) ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="filterSubtype" class="form-control">
+                                <option value="">All Subtypes</option>
+                                <?php while ($sub = mysqli_fetch_assoc($subtypes)) { ?>
+                                    <option value="<?= htmlspecialchars($sub['subtype_name']) ?>"><?= htmlspecialchars($sub['subtype_name']) ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="filterStatus" class="form-control">
+                                <option value="">All Status</option>
+                                <option value="Approved">Approved</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search by Name, Description, Serial No...">
+                        </div>
+                    </div>
 
                     <table class="table table-bordered table-striped">
                     <thead class="thead-dark">
@@ -396,6 +443,49 @@ session_start();
             $(function () {
                 $('[data-toggle="tooltip"]').tooltip();
             });
+
+
+          // table filtering option   
+          $(document).ready(function() {
+              function filterTable() {
+                  var category = $('#filterCategory').val().toLowerCase();
+                  var type = $('#filterType').val().toLowerCase();
+                  var subtype = $('#filterSubtype').val().toLowerCase();
+                  var status = $('#filterStatus').val().toLowerCase();
+                  var search = $('#searchInput').val().toLowerCase();
+
+                  $('table tbody tr').each(function() {
+                      var row = $(this);
+                      var name = row.find('td:nth-child(1)').text().toLowerCase();
+                      var desc = row.find('td:nth-child(2)').text().toLowerCase();
+                      var serial = row.find('td:nth-child(3)').text().toLowerCase();
+                      var qty = row.find('td:nth-child(4)').text().toLowerCase();
+                      var cat = row.find('td:nth-child(5)').text().toLowerCase();
+                      var typ = row.find('td:nth-child(6)').text().toLowerCase();
+                      var subtyp = row.find('td:nth-child(7)').text().toLowerCase();
+                      var stat = row.find('td:nth-child(8)').text().toLowerCase();
+
+                      var matchesFilter =
+                          (category === "" || cat.includes(category)) &&
+                          (type === "" || typ.includes(type)) &&
+                          (subtype === "" || subtyp.includes(subtype)) &&
+                          (status === "" || stat.includes(status)) &&
+                          (name.includes(search) || desc.includes(search) || serial.includes(search));
+
+                      if (matchesFilter) {
+                          row.show();
+                      } else {
+                          row.hide();
+                      }
+                  });
+              }
+
+              $('#filterCategory, #filterType, #filterSubtype, #filterStatus, #searchInput').on('input change', filterTable);
+          });
+
+
+
+
      </script>
 
       <footer class="app-footer">
