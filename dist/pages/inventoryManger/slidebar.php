@@ -158,9 +158,10 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="./tables/simple.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Simple Tables</p>
+                    <a href="inventory_add_requests.php" class="nav-link">
+               
+                      <i class="nav-icon bi bi-clipboard-check"></i>
+                      <p>Inventory Add Requests</p>
                     </a>
                   </li>
                 </ul>
