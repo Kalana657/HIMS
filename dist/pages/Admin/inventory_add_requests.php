@@ -261,121 +261,124 @@ session_start();
 
                       
                       <!-- View More Modal -->
-                    <div class="modal fade" id="detailsModal<?= $row['item_id'] ?>" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel<?= $row['item_id'] ?>" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <form action="process_approval.php" method="POST"> <!-- You can adjust this file -->
-                        <input type="text" name="item_id" value="<?= $row['item_id'] ?>">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                            <h5 class="modal-title" id="detailsModalLabel<?= $row['item_id'] ?>">Item Details - <?= htmlspecialchars($row['item_name']) ?></h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span>&times;</span>
-                            </button>
-                            </div>
-                            
-                            <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                <strong>Description:</strong><br><?= htmlspecialchars($row['description']) ?><br><br>
-                                <strong>Serial Number:</strong><br><?= htmlspecialchars($row['serial_number']) ?><br><br>
-                                <strong>Batch No:</strong><br><?= htmlspecialchars($row['bn_number']) ?><br><br>
-                                <strong>Vendor ID:</strong><br><?= htmlspecialchars($row['vendor_id']) ?><br><br>
-                                <strong>Warranty:</strong><br><?= htmlspecialchars($row['warranty_from']) ?> to <?= htmlspecialchars($row['warranty_to']) ?><br><br>
-                                </div>
-                                <div class="col-md-6">
-                                <strong>Manufacture Date:</strong><br><?= htmlspecialchars($row['manufacture_date']) ?><br><br>
-                                <strong>Expiry Date:</strong><br><?= htmlspecialchars($row['expiry_date']) ?><br><br>
-                                <strong>Created At:</strong><br><?= htmlspecialchars($row['created_at']) ?><br><br>
-                                <strong>Updated At:</strong><br><?= htmlspecialchars($row['updated_at']) ?><br><br>
-                                
-                                <?php
-                                    $approvedQty = $row['approved_quantity'];
-                                    $requestedQty = $row['quantity'];
+                      <div class="modal fade" id="detailsModal<?= $row['item_id'] ?>" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel<?= $row['item_id'] ?>" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <form action="process_approval.php" method="POST">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-primary text-white">
+                                            <h5 class="modal-title" id="detailsModalLabel<?= $row['item_id'] ?>">
+                                                <i class="bi bi-info-circle-fill"></i> Item Details - <?= htmlspecialchars($row['item_name']) ?>
+                                            </h5>
+                                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                                <span>&times;</span>
+                                            </button>
+                                        </div>
 
-                                    $qtyClass = '';
-                                    $qtyNote = '';
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="border rounded p-3 bg-light">
+                                                        <strong>Description:</strong><br><?= htmlspecialchars($row['description']) ?><br><br>
+                                                        <strong>Serial Number:</strong><br><?= htmlspecialchars($row['serial_number']) ?><br><br>
+                                                        <strong>Batch No:</strong><br><?= htmlspecialchars($row['bn_number']) ?><br><br>
 
-                                    if ($approvedQty > $requestedQty) {
-                                        $qtyClass = 'bg-warning text-dark';
-                                        $qtyNote = 'Less than requested';
-                                    } elseif ($approvedQty < $requestedQty) {
-                                        $qtyClass = 'bg-danger text-white';
-                                        $qtyNote = 'More than requested';
-                                    } else {
-                                        $qtyClass = 'bg-success text-white';
-                                        $qtyNote = 'Exact as requested';
-                                    }
-                                    ?>
+                                                        <?php if ($row['vendor_id'] != 0): ?>
+                                                            <strong>Vendor ID:</strong><br><?= htmlspecialchars($row['vendor_id']) ?><br><br>
+                                                            <strong>Warranty:</strong><br><?= htmlspecialchars($row['warranty_from']) ?> to <?= htmlspecialchars($row['warranty_to']) ?><br><br>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
 
-                                    <div class="form-group">
-                                        <label><strong>Approved Quantity</strong></label>
-                                        <input type="text" class="form-control <?= $qtyClass ?>" value="<?= htmlspecialchars($approvedQty) ?>" readonly>
-                                        <small class="form-text"><?= $qtyNote ?></small>
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="border rounded p-3 bg-light">
+                                                        <strong>Manufacture Date:</strong><br><?= htmlspecialchars($row['manufacture_date']) ?><br><br>
+                                                        <strong>Expiry Date:</strong><br><?= htmlspecialchars($row['expiry_date']) ?><br><br>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6 mb-3">
+                                                    <?php
+                                                        $approvedQty = $row['approved_quantity'];
+                                                        $requestedQty = $row['quantity'];
+
+                                                        if ($requestedQty === null) {
+                                                            $qtyClass = 'badge-secondary';
+                                                            $qtyNote = 'No Related Quantity';
+                                                        } else {
+                                                            if ($approvedQty > $requestedQty) {
+                                                                $qtyClass = 'badge-warning';
+                                                                $qtyNote = 'Less than requested';
+                                                            } elseif ($approvedQty < $requestedQty) {
+                                                                $qtyClass = 'badge-danger';
+                                                                $qtyNote = 'More than requested';
+                                                            } else {
+                                                                $qtyClass = 'badge-success';
+                                                                $qtyNote = 'Exact as requested';
+                                                            }
+                                                        }
+                                                    ?>
+
+                                                    <div class="form-group">
+                                                        <label><strong>Approved Quantity</strong></label>
+                                                        <input type="text" class="form-control" value="<?= htmlspecialchars($approvedQty) ?>" readonly>
+                                                        <div class="mt-2">
+                                                            <span class="badge <?= $qtyClass ?>"><?= $qtyNote ?></span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="quantity<?= $row['item_id'] ?>"><strong>Edit Requested Quantity</strong></label>
+                                                        <input type="number" name="quantity" id="quantity<?= $row['item_id'] ?>" value="<?= htmlspecialchars($requestedQty) ?>" class="form-control" max="<?= $approvedQty ?>" required oninput="validateQty<?= $row['item_id'] ?>()">
+                                                        <small id="errorMsg<?= $row['item_id'] ?>" class="text-danger" style="display:none;">Requested quantity cannot exceed approved quantity!</small>
+                                                    </div>
+
+                                                    <script>
+                                                        function validateQty<?= $row['item_id'] ?>() {
+                                                            var input = document.getElementById('quantity<?= $row['item_id'] ?>');
+                                                            var errorMsg = document.getElementById('errorMsg<?= $row['item_id'] ?>');
+                                                            var approveBtn = document.querySelector('#detailsModal<?= $row['item_id'] ?> button[name="approve"]');
+                                                            var approvedQty = <?= $approvedQty ?>;
+
+                                                            if (parseInt(input.value) > approvedQty) {
+                                                                errorMsg.style.display = 'block';
+                                                                input.classList.add('is-invalid');
+                                                                approveBtn.disabled = true;
+                                                            } else {
+                                                                errorMsg.style.display = 'none';
+                                                                input.classList.remove('is-invalid');
+                                                                approveBtn.disabled = false;
+                                                            }
+                                                        }
+
+                                                        document.addEventListener('DOMContentLoaded', function() {
+                                                            validateQty<?= $row['item_id'] ?>();
+                                                        });
+                                                    </script>
+                                                </div>
+
+                                                <div class="col-md-12 mb-3">
+                                                    <div class="form-group">
+                                                        <label for="comment<?= $row['item_id'] ?>"><strong>Admin Comment</strong></label>
+                                                        <textarea name="comment" id="comment<?= $row['item_id'] ?>" class="form-control" rows="3" placeholder="Enter any remarks..."></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="submit" name="reject" class="btn btn-outline-danger">
+                                                <i class="bi bi-x-circle-fill"></i> Reject
+                                            </button>
+                                            <button type="submit" name="approve" class="btn btn-outline-success">
+                                                <i class="bi bi-check-circle-fill"></i> Approve
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        </div>
                                     </div>
-
-                                    <div class="form-group">
-                                        <label for="quantity<?= $row['item_id'] ?>"><strong>Edit Requested Quantity</strong></label>
-                                        <input type="number" 
-                                            name="quantity" 
-                                            id="quantity<?= $row['item_id'] ?>" 
-                                            value="<?= htmlspecialchars($requestedQty) ?>" 
-                                            class="form-control"
-                                            max="<?= $approvedQty ?>" 
-                                            required 
-                                            oninput="validateQty<?= $row['item_id'] ?>()">
-                                        <small id="errorMsg<?= $row['item_id'] ?>" class="text-danger" style="display:none;">Requested quantity cannot exceed approved quantity!</small>
-                                    </div>
-
-                                    <script>
-                                    function validateQty<?= $row['item_id'] ?>() {
-                                        var input = document.getElementById('quantity<?= $row['item_id'] ?>');
-                                        var errorMsg = document.getElementById('errorMsg<?= $row['item_id'] ?>');
-                                        var approveBtn = document.querySelector('#detailsModal<?= $row['item_id'] ?> button[name="approve"]');
-                                        var approvedQty = <?= $approvedQty ?>;
-                                        
-                                        if (parseInt(input.value) > approvedQty) {
-                                            errorMsg.style.display = 'block';
-                                            input.classList.add('is-invalid');
-                                            approveBtn.disabled = true;
-                                        } else {
-                                            errorMsg.style.display = 'none';
-                                            input.classList.remove('is-invalid');
-                                            approveBtn.disabled = false;
-                                        }
-                                    }
-
-                                    // Initialize check on modal open (optional safety check)
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        validateQty<?= $row['item_id'] ?>();
-                                    });
-                                    </script>
-
-
-
-
-                                
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="comment<?= $row['item_id'] ?>"><strong>Admin Comment</strong></label>
-                                <textarea name="comment" id="comment<?= $row['item_id'] ?>" class="form-control" rows="3" placeholder="Enter any remarks..."></textarea>
-                            </div>
-                            </div>
-
-                            <div class="modal-footer">
-                            <button type="submit" name="reject" class="btn btn-danger">
-                                <i class="bi bi-x-circle-fill"></i> Reject
-                            </button>
-                            <button type="submit" name="approve" class="btn btn-success">
-                                <i class="bi bi-check-circle-fill"></i> Approve
-                            </button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </form>
                             </div>
                         </div>
-                        </form>
-                    </div>
-                    </div>
+
 
                         <?php } ?>
                     </tbody>
