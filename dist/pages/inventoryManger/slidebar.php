@@ -50,18 +50,17 @@
               </li>
               <li class="nav-item">
                 <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-clipboard-fill"></i>
+                  <i class="nav-icon bi bi-arrow-left-right"></i>
                   <p>
-                    Layout Options
-                    <span class="nav-badge badge text-bg-secondary me-3">6</span>
+                    Distribution Section
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="./layout/unfixed-sidebar.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Default Sidebar</p>
+                    <a href="distribute_item_form.php" class="nav-link">
+                      <i class="nav-icon	bi-send-check"></i>
+                      <p>Distribution Form</p>
                     </a>
                   </li>
                   <li class="nav-item">
