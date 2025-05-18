@@ -156,7 +156,7 @@ session_start();
                             icon: "' . $_SESSION['status'] . '",
                             confirmButtonText: "OK"
                         }).then(() => {
-                            window.location.href = "Addnewuser.php";
+                            window.location.href = "Add_unit.php";
                         });
                     </script>';
                     
@@ -217,7 +217,7 @@ $unitsResult = mysqli_query($conn, $unitsQuery);
                         <h5 class="mb-0">Add New Unit</h5>
                         </div>
                         <div class="card-body">
-                        <form action="add_unit.php" method="POST" novalidate>
+                        <form action="Add_unit_insert.php" method="POST" novalidate>
                             
                             <div class="mb-3">
                             <label for="unit_name" class="form-label">Unit Name <span class="text-danger">*</span></label>
@@ -229,15 +229,7 @@ $unitsResult = mysqli_query($conn, $unitsQuery);
                             <textarea id="description" name="description" class="form-control" rows="3" placeholder="Description about this unit"></textarea>
                             </div>
 
-                            <div class="mb-3">
-                            <label for="priority_level" class="form-label">Priority Level <span class="text-danger">*</span></label>
-                            <select id="priority_level" name="priority_level" class="form-select" required>
-                                <option value="" disabled selected>-- Select Priority --</option>
-                                <option value="Low">Low</option>
-                                <option value="Medium" selected>Medium</option>
-                                <option value="High">High</option>
-                            </select>
-                            </div>
+                         
 
                             <button type="submit" class="btn btn-primary">Add Unit</button>
                         </form>
@@ -257,7 +249,7 @@ $unitsResult = mysqli_query($conn, $unitsQuery);
                                 <th>#</th>
                                 <th>Unit Name</th>
                                 <th>Description</th>
-                                <th>Priority Level</th>
+                              
                                 <th>Actions</th>
                                 </tr>
                             </thead>
@@ -266,20 +258,13 @@ $unitsResult = mysqli_query($conn, $unitsQuery);
                                 $count = 1;
                                 if ($unitsResult && mysqli_num_rows($unitsResult) > 0) {
                                     while ($unit = mysqli_fetch_assoc($unitsResult)) {
-                                        $priorityClass = 'bg-secondary';
-                                        if ($unit['priority_level'] === 'High') {
-                                            $priorityClass = 'bg-danger';
-                                        } elseif ($unit['priority_level'] === 'Medium') {
-                                            $priorityClass = 'bg-warning text-dark';
-                                        } elseif ($unit['priority_level'] === 'Low') {
-                                            $priorityClass = 'bg-success';
-                                        }
+                                       
 
                                         echo '<tr>';
                                         echo '<td>' . $count++ . '</td>';
                                         echo '<td>' . htmlspecialchars($unit['unit_name']) . '</td>';
                                         echo '<td>' . htmlspecialchars($unit['description']) . '</td>';
-                                        echo '<td><span class="badge ' . $priorityClass . '">' . htmlspecialchars($unit['priority_level']) . '</span></td>';
+                                      
                                         echo '<td>
                                                 <a href="edit_unit.php?id=' . $unit['unit_id'] . '" class="btn btn-sm btn-outline-primary me-1" title="Edit">
                                                 <i class="bi bi-pencil"></i>
