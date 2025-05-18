@@ -201,24 +201,49 @@ session_start();
                               </thead>
                               <tbody>
                               <?php
-                              $query = "SELECT item_id, item_name, quantity FROM inventory_item WHERE status=1 ORDER BY item_name ASC";
+                              $query = "SELECT 
+                                      inventory_item.item_id, 
+                                      inventory_item.item_name, 
+                                      inventory_item.quantity, 
+                                      item_approvals.approval_id,
+                                      item_approvals.approved_quantity,
+                                      item_approvals.status_approval,
+                                      item_approvals.comment,
+                                      item_approvals.created_at
+                                  FROM 
+                                      inventory_item
+                                  JOIN 
+                                      item_approvals ON inventory_item.item_id = item_approvals.item_idat
+                                  WHERE 
+                                      inventory_item.status = 1
+                                  ORDER BY 
+                                      inventory_item.item_name ASC;
+                                  ";
                               $result = mysqli_query($conn, $query);
 
                               if ($result && mysqli_num_rows($result) > 0) {
                                   while ($row = mysqli_fetch_assoc($result)) {
                                       $itemId = $row['item_id'];
                                       $itemName = htmlspecialchars($row['item_name']);
-                                      $quantity = (int)$row['quantity'];
+                                      $quantity = htmlspecialchars($row['quantity']);
+                                      $approved_quantity = htmlspecialchars($row['approved_quantity']);
+                                     echo   "L-".$low_stock_level = $approved_quantity * 0.10;
+                                      echo "R-".$Refill_stock_level = $approved_quantity * 0.30;
+                                      
 
                                       // Determine badge and input status
-                                      if ($quantity > 100) {
+                                      if ($quantity > $Refill_stock_level) {
                                           $badgeClass = 'bg-success';
                                           $statusText = 'Available';
                                           $inputDisabled = '';
-                                      } elseif ($quantity > 0) {
+                                      } elseif ($quantity > $low_stock_level && $quantity <= $Refill_stock_level) {
+                                          $badgeClass = 'bg-warning text-dark';
+                                          $statusText = 'Refill recommended';
+                                          $inputDisabled = '';
+                                      }elseif ($quantity > 0 && $quantity <= $low_stock_level) {
                                           $badgeClass = 'bg-warning text-dark';
                                           $statusText = 'Low Stock';
-                                          $inputDisabled = '';
+                                          $inputDisabled = '';   
                                       } else {
                                           $badgeClass = 'bg-danger';
                                           $statusText = 'Out of Stock';
