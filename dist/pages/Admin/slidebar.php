@@ -40,9 +40,9 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="./widgets/cards.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Cards</p>
+                    <a href="Add_unit.php" class="nav-link">
+                      <i class="nav-icon bi bi-building"></i>
+                        <p>Add Unit/Wards</p>
                     </a>
                   </li>
                 </ul>
