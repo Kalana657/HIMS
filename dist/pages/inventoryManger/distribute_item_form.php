@@ -160,6 +160,7 @@ session_start();
             
 
                 <!-- Step 1: Unit Selection -->
+                 <form action="submit_distribution.php" method="POST"> 
                 <div class="mb-4">
                       <label for="unitSelect" class="form-label fw-semibold">Select Department / Unit</label>
                       <select id="unitSelect" name="unit_id" class="form-select" required>
@@ -185,7 +186,7 @@ session_start();
 
 
                     <!-- Step 2: Inventory List -->
-                    <form action="submit_distribution.php" method="POST">
+                   
                       <label class="form-label fw-semibold">Select Items & Enter Quantity</label>
                       <div class="table-responsive">
                           <table class="table table-hover align-middle table-bordered">
