@@ -161,67 +161,92 @@ session_start();
 
                 <!-- Step 1: Unit Selection -->
                 <div class="mb-4">
-                    <label for="unitSelect" class="form-label fw-semibold">Select Department / Unit</label>
-                    <select id="unitSelect" class="form-select">
-                        <option disabled selected>-- Choose Unit --</option>
-                        <option>ICU (Critical)</option>
-                        <option>Emergency</option>
-                        <option>Pediatrics</option>
-                        <option>Surgery</option>
-                    </select>
-                </div>
+                      <label for="unitSelect" class="form-label fw-semibold">Select Department / Unit</label>
+                      <select id="unitSelect" name="unit_id" class="form-select" required>
+                          <option disabled selected>-- Choose Unit --</option>
+                          <?php
+                          // Include DB connection
+                          include('db_connect.php');
 
-                <!-- Step 2: Inventory List -->
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">Select Items & Enter Quantity</label>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle table-bordered">
-                            <thead class="table-primary text-center">
-                                <tr>
-                                    <th style="width: 40px;"><input type="checkbox" id="selectAll"></th>
-                                    <th>Item</th>
-                                    <th style="width: 120px;">Current Stock</th>
-                                    <th style="width: 120px;">Status</th>
-                                    <th style="width: 140px;">Distribute Qty</th>
-                                    <th>Remarks</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-center"><input type="checkbox" class="itemCheck"></td>
-                                    <td>Paracetamol 500mg</td>
-                                    <td class="text-center">1200</td>
-                                    <td class="text-center">
-                                        <span class="badge bg-success">Available</span>
-                                    </td>
-                                    <td><input type="number" class="form-control" min="1" placeholder="0"></td>
-                                    <td><input type="text" class="form-control" placeholder="Optional..."></td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center"><input type="checkbox" class="itemCheck"></td>
-                                    <td>Normal Saline 0.9%</td>
-                                    <td class="text-center">50</td>
-                                    <td class="text-center">
-                                        <span class="badge bg-warning text-dark">Low Stock</span>
-                                    </td>
-                                    <td><input type="number" class="form-control" min="1" placeholder="0"></td>
-                                    <td><input type="text" class="form-control" placeholder="Optional..."></td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center"><input type="checkbox" class="itemCheck"></td>
-                                    <td>Surgical Gloves (M)</td>
-                                    <td class="text-center">0</td>
-                                    <td class="text-center">
-                                        <span class="badge bg-danger">Out of Stock</span>
-                                    </td>
-                                    <td><input type="number" class="form-control" min="1" placeholder="0" disabled></td>
-                                    <td><input type="text" class="form-control" placeholder="Optional..."></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                          // Fetch all units
+                          $unitsQuery = "SELECT unit_id, unit_name FROM units ORDER BY unit_name ASC";
+                          $unitsResult = mysqli_query($conn, $unitsQuery);
 
+                          if ($unitsResult && mysqli_num_rows($unitsResult) > 0) {
+                              while ($row = mysqli_fetch_assoc($unitsResult)) {
+                                  echo '<option value="' . $row['unit_id'] . '">' . htmlspecialchars($row['unit_name']) . '</option>';
+                              }
+                          } else {
+                              echo '<option disabled>No units available</option>';
+                          }
+                          ?>
+                      </select>
+                  </div>
+
+
+                    <!-- Step 2: Inventory List -->
+                    <form action="submit_distribution.php" method="POST">
+                      <label class="form-label fw-semibold">Select Items & Enter Quantity</label>
+                      <div class="table-responsive">
+                          <table class="table table-hover align-middle table-bordered">
+                              <thead class="table-primary text-center">
+                                  <tr>
+                                      <th style="width: 40px;"><input type="checkbox" id="selectAll"></th>
+                                      <th>Item</th>
+                                      <th style="width: 120px;">Current Stock</th>
+                                      <th style="width: 120px;">Status</th>
+                                      <th style="width: 140px;">Distribute Qty</th>
+                                      <th>Remarks</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                              <?php
+                              $query = "SELECT item_id, item_name, quantity FROM inventory_item WHERE status=1 ORDER BY item_name ASC";
+                              $result = mysqli_query($conn, $query);
+
+                              if ($result && mysqli_num_rows($result) > 0) {
+                                  while ($row = mysqli_fetch_assoc($result)) {
+                                      $itemId = $row['item_id'];
+                                      $itemName = htmlspecialchars($row['item_name']);
+                                      $quantity = (int)$row['quantity'];
+
+                                      // Determine badge and input status
+                                      if ($quantity > 100) {
+                                          $badgeClass = 'bg-success';
+                                          $statusText = 'Available';
+                                          $inputDisabled = '';
+                                      } elseif ($quantity > 0) {
+                                          $badgeClass = 'bg-warning text-dark';
+                                          $statusText = 'Low Stock';
+                                          $inputDisabled = '';
+                                      } else {
+                                          $badgeClass = 'bg-danger';
+                                          $statusText = 'Out of Stock';
+                                          $inputDisabled = 'disabled';
+                                      }
+
+                                      echo "<tr>
+                                          <td class='text-center'>
+                                              <input type='checkbox' class='itemCheck' name='selected_items[]' value='$itemId'>
+                                          </td>
+                                          <td>$itemName</td>
+                                          <td class='text-center'>$quantity</td>
+                                          <td class='text-center'><span class='badge $badgeClass'>$statusText</span></td>
+                                          <td><input type='number' name='qty[$itemId]' class='form-control' min='1' placeholder='0' $inputDisabled></td>
+                                          <td><input type='text' name='remarks[$itemId]' class='form-control' placeholder='Optional...'></td>
+                                      </tr>";
+                                  }
+                              } else {
+                                  echo '<tr><td colspan="6" class="text-center text-muted">No items found in inventory.</td></tr>';
+                              }
+                              ?>
+                              </tbody>
+                          </table>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary mt-3">Distribute Selected Items</button>
+                  </form>
+         
                 <!-- Step 3: Summary & Submit -->
                 <div class="card border-success shadow-sm p-3 mb-3">
                     <h6 class="fw-bold text-success"><i class="bi bi-clipboard-check me-2"></i> Review and Confirm Distribution</h6>
