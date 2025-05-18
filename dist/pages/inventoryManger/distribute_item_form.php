@@ -156,152 +156,152 @@ session_start();
         
             <div class="card-body">
 
-            
-            
+            <form action="submit_distribution.php" method="POST" id="distributionForm">
+                  <div id="distributionGroups">
+                       
 
-                <!-- Step 1: Unit Selection -->
-                 <form action="submit_distribution.php" method="POST"> 
-                <div class="mb-4">
-                      <label for="unitSelect" class="form-label fw-semibold">Select Department / Unit</label>
-                      <select id="unitSelect" name="unit_id" class="form-select" required>
-                          <option disabled selected>-- Choose Unit --</option>
-                          <?php
-                          // Include DB connection
-                          include('db_connect.php');
 
-                          // Fetch all units
-                          $unitsQuery = "SELECT unit_id, unit_name FROM units ORDER BY unit_name ASC";
-                          $unitsResult = mysqli_query($conn, $unitsQuery);
 
-                          if ($unitsResult && mysqli_num_rows($unitsResult) > 0) {
-                              while ($row = mysqli_fetch_assoc($unitsResult)) {
-                                  echo '<option value="' . $row['unit_id'] . '">' . htmlspecialchars($row['unit_name']) . '</option>';
-                              }
-                          } else {
-                              echo '<option disabled>No units available</option>';
-                          }
-                          ?>
-                      </select>
+
+
+
+                      <!-- Distribution Group Template -->
+                      <div class="distribution-group border rounded p-3 mb-3">
+                          <div class="mb-3">
+                              <label class="form-label fw-semibold">Select Department / Unit</label>
+                              <select name="distribution[0][unit_id]" class="form-select unit-select" required>
+                                  <option disabled selected>-- Choose Unit --</option>
+                                  <?php
+                                  include('db_connect.php');
+                                  $unitsQuery = "SELECT unit_id, unit_name FROM units ORDER BY unit_name ASC";
+                                  $unitsResult = mysqli_query($conn, $unitsQuery);
+                                  if ($unitsResult && mysqli_num_rows($unitsResult) > 0) {
+                                      while ($row = mysqli_fetch_assoc($unitsResult)) {
+                                          echo '<option value="' . $row['unit_id'] . '">' . htmlspecialchars($row['unit_name']) . '</option>';
+                                      }
+                                  } else {
+                                      echo '<option disabled>No units available</option>';
+                                  }
+                                  ?>
+                              </select>
+                          </div>
+
+                          <!-- Items Table -->
+                          <label class="form-label fw-semibold">Select Items & Enter Quantity</label>
+                          <div class="table-responsive">
+                              <table class="table table-hover table-bordered align-middle">
+                                  <thead class="table-primary text-center">
+                                      <tr>
+                                          <th><input type="checkbox" class="selectAll"></th>
+                                          <th>Item</th>
+                                          <th>Current Stock</th>
+                                          <th>Status</th>
+                                          <th>Distribute Qty</th>
+                                          <th>Remarks</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <?php
+                                      $query = "SELECT 
+                                                  inventory_item.item_id, 
+                                                  inventory_item.item_name, 
+                                                  inventory_item.quantity, 
+                                                  item_approvals.approved_quantity
+                                                FROM inventory_item
+                                                JOIN item_approvals ON inventory_item.item_id = item_approvals.item_idat
+                                                WHERE inventory_item.status = 1
+                                                ORDER BY inventory_item.item_name ASC";
+                                      $result = mysqli_query($conn, $query);
+
+                                      if ($result && mysqli_num_rows($result) > 0) {
+                                          while ($row = mysqli_fetch_assoc($result)) {
+                                              $itemId = $row['item_id'];
+                                              $itemName = htmlspecialchars($row['item_name']);
+                                              $quantity = htmlspecialchars($row['quantity']);
+                                              $approved_quantity = htmlspecialchars($row['approved_quantity']);
+
+                                              $low_stock_level = $approved_quantity * 0.10;
+                                              $refill_stock_level = $approved_quantity * 0.30;
+
+                                              if ($quantity > $refill_stock_level) {
+                                                  $badgeClass = 'bg-success';
+                                                  $statusText = 'Available';
+                                                  $inputDisabled = '';
+                                              } elseif ($quantity > $low_stock_level) {
+                                                  $badgeClass = 'bg-warning text-dark';
+                                                  $statusText = 'Refill Recommended';
+                                                  $inputDisabled = '';
+                                              } elseif ($quantity > 0) {
+                                                  $badgeClass = 'bg-warning text-dark';
+                                                  $statusText = 'Low Stock';
+                                                  $inputDisabled = '';
+                                              } else {
+                                                  $badgeClass = 'bg-danger';
+                                                  $statusText = 'Out of Stock';
+                                                  $inputDisabled = 'disabled';
+                                              }
+
+                                              echo "<tr>
+                                                  <td class='text-center'><input type='checkbox' name='distribution[0][items][$itemId][selected]' value='1' class='itemCheck'></td>
+                                                  <td>$itemName</td>
+                                                  <td class='text-center'>$quantity</td>
+                                                  <td class='text-center'><span class='badge $badgeClass'>$statusText</span></td>
+                                                  <td><input type='number' name='distribution[0][items][$itemId][qty]' class='form-control' min='1' placeholder='0' $inputDisabled></td>
+                                                  <td><input type='text' name='distribution[0][items][$itemId][remarks]' class='form-control' placeholder='Optional...'></td>
+                                              </tr>";
+                                          }
+                                      } else {
+                                          echo '<tr><td colspan="6" class="text-center text-muted">No items found in inventory.</td></tr>';
+                                      }
+                                      ?>
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
                   </div>
 
+                  <!-- Button to Add Another Unit Distribution -->
+                  <div class="text-end mb-4">
+                      <button type="button" class="btn btn-outline-primary" id="addUnitBtn"><i class="bi bi-plus-circle"></i> Add Another Unit</button>
+                  </div>
 
-                    <!-- Step 2: Inventory List -->
-                   
-                      <label class="form-label fw-semibold">Select Items & Enter Quantity</label>
-                      <div class="table-responsive">
-                          <table class="table table-hover align-middle table-bordered">
-                              <thead class="table-primary text-center">
-                                  <tr>
-                                      <th style="width: 40px;"><input type="checkbox" id="selectAll"></th>
-                                      <th>Item</th>
-                                      <th style="width: 120px;">Current Stock</th>
-                                      <th style="width: 120px;">Status</th>
-                                      <th style="width: 140px;">Distribute Qty</th>
-                                      <th>Remarks</th>
-                                  </tr>
-                              </thead>
-                              <tbody>
-                              <?php
-                              $query = "SELECT 
-                                      inventory_item.item_id, 
-                                      inventory_item.item_name, 
-                                      inventory_item.quantity, 
-                                      item_approvals.approval_id,
-                                      item_approvals.approved_quantity,
-                                      item_approvals.status_approval,
-                                      item_approvals.comment,
-                                      item_approvals.created_at
-                                  FROM 
-                                      inventory_item
-                                  JOIN 
-                                      item_approvals ON inventory_item.item_id = item_approvals.item_idat
-                                  WHERE 
-                                      inventory_item.status = 1
-                                  ORDER BY 
-                                      inventory_item.item_name ASC;
-                                  ";
-                              $result = mysqli_query($conn, $query);
+                  <!-- Submit Button -->
+                  <div class="d-grid">
+                      <button type="submit" class="btn btn-success"><i class="bi bi-check2-circle me-2"></i> Confirm & Distribute</button>
+                  </div>
+              </form>
 
-                              if ($result && mysqli_num_rows($result) > 0) {
-                                  while ($row = mysqli_fetch_assoc($result)) {
-                                      $itemId = $row['item_id'];
-                                      $itemName = htmlspecialchars($row['item_name']);
-                                      $quantity = htmlspecialchars($row['quantity']);
-                                      $approved_quantity = htmlspecialchars($row['approved_quantity']);
-                                     echo   "L-".$low_stock_level = $approved_quantity * 0.10;
-                                      echo "R-".$Refill_stock_level = $approved_quantity * 0.30;
-                                      
+            
 
-                                      // Determine badge and input status
-                                      if ($quantity > $Refill_stock_level) {
-                                          $badgeClass = 'bg-success';
-                                          $statusText = 'Available';
-                                          $inputDisabled = '';
-                                      } elseif ($quantity > $low_stock_level && $quantity <= $Refill_stock_level) {
-                                          $badgeClass = 'bg-warning text-dark';
-                                          $statusText = 'Refill recommended';
-                                          $inputDisabled = '';
-                                      }elseif ($quantity > 0 && $quantity <= $low_stock_level) {
-                                          $badgeClass = 'bg-warning text-dark';
-                                          $statusText = 'Low Stock';
-                                          $inputDisabled = '';   
-                                      } else {
-                                          $badgeClass = 'bg-danger';
-                                          $statusText = 'Out of Stock';
-                                          $inputDisabled = 'disabled';
-                                      }
-
-                                      echo "<tr>
-                                          <td class='text-center'>
-                                              <input type='checkbox' class='itemCheck' name='selected_items[]' value='$itemId'>
-                                          </td>
-                                          <td>$itemName</td>
-                                          <td class='text-center'>$quantity</td>
-                                          <td class='text-center'><span class='badge $badgeClass'>$statusText</span></td>
-                                          <td><input type='number' name='qty[$itemId]' class='form-control' min='1' placeholder='0' $inputDisabled></td>
-                                          <td><input type='text' name='remarks[$itemId]' class='form-control' placeholder='Optional...'></td>
-                                      </tr>";
-                                  }
-                              } else {
-                                  echo '<tr><td colspan="6" class="text-center text-muted">No items found in inventory.</td></tr>';
-                              }
-                              ?>
-                              </tbody>
-                          </table>
-                      </div>
-
-                      <button type="submit" class="btn btn-primary mt-3">Distribute Selected Items</button>
-                  </form>
-         
-                <!-- Step 3: Summary & Submit -->
-                <div class="card border-success shadow-sm p-3 mb-3">
-                    <h6 class="fw-bold text-success"><i class="bi bi-clipboard-check me-2"></i> Review and Confirm Distribution</h6>
-                    <p class="text-muted">Verify selected items and units before final submission.</p>
-                    <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Unit Selected:
-                            <span class="badge bg-primary">ICU</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Total Items Selected:
-                            <span class="badge bg-success">2 Items</span>
-                        </li>
-                    </ul>
-                    <div class="d-grid">
-                        <button class="btn btn-success">
-                            <i class="bi bi-check2-circle me-2"></i> Confirm & Distribute
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-    </div>
+                
+                 
+          </div>
+       </div>
 
      
 
 
       </main>
     
+       <script>
+        let distributionIndex = 1;
+
+        $('#addUnitBtn').click(function () {
+            let group = $('.distribution-group').first().clone();
+
+            group.find('select, input').each(function () {
+                let name = $(this).attr('name');
+                if (name) {
+                    let newName = name.replace(/\[0\]/, `[${distributionIndex}]`);
+                    $(this).attr('name', newName);
+                }
+                $(this).val('');
+            });
+
+            $('#distributionGroups').append(group);
+            distributionIndex++;
+        });
+      </script>
 
       <footer class="app-footer">
       
