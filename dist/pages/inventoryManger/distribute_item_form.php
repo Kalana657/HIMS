@@ -260,10 +260,7 @@ session_start();
                       </div>
                   </div>
 
-                  <!-- Button to Add Another Unit Distribution -->
-                  <div class="text-end mb-4">
-                      <button type="button" class="btn btn-outline-primary" id="addUnitBtn"><i class="bi bi-plus-circle"></i> Add Another Unit</button>
-                  </div>
+                 
 
                   <!-- Submit Button -->
                   <div class="d-grid">
@@ -283,25 +280,7 @@ session_start();
 
       </main>
     
-       <script>
-        let distributionIndex = 1;
-
-        $('#addUnitBtn').click(function () {
-            let group = $('.distribution-group').first().clone();
-
-            group.find('select, input').each(function () {
-                let name = $(this).attr('name');
-                if (name) {
-                    let newName = name.replace(/\[0\]/, `[${distributionIndex}]`);
-                    $(this).attr('name', newName);
-                }
-                $(this).val('');
-            });
-
-            $('#distributionGroups').append(group);
-            distributionIndex++;
-        });
-      </script>
+      
 
       <footer class="app-footer">
       
