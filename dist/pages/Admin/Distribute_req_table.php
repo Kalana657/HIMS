@@ -12,7 +12,7 @@ session_start();
 
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>HIMS ADMIN  | Main Inventory  Table</title>
+    <title>HIMS ADMIN  | Distribute Request  Table</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="title" content="AdminLTE v4 | Dashboard" />
@@ -246,7 +246,7 @@ session_start();
     </div>
    
   </body>
-  <!--end::Body-->
+
 
 
 
