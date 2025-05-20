@@ -158,30 +158,69 @@ session_start();
             unset($_SESSION['message']);
         }
        ?>
-      <div class="container mt-4">
-                <h4 class="mb-3">Special Drug Requests</h4>
-                <table class="table table-bordered table-hover">
-                    <thead class="thead-dark">
-                    <tr>
-                        <th>Drug Name</th>
-                        <th>Total Requested</th>
-                        <th>Approved</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>Paracetamol 500mg</td>
-                        <td>300</td>
-                        <td>120</td>
-                        <td><span class="badge badge-warning">Pending</span></td>
-                        <td><button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#unitModal">View Units</button></td>
-                    </tr>
-                   
-                    </tbody>
-                </table>
-                </div>
+            <?php
+           
+
+                    include('db_connect.php');
+                    $sql = "SELECT 
+                        inventory_item.item_name,
+                        SUM(item_distributions.Approval_distributed_quantity) AS total_approved,
+                        SUM(item_distributions.distributed_quantity) AS total_distributed
+                    FROM 
+                        item_distributions
+                    JOIN 
+                        inventory_item ON item_distributions.item_id = inventory_item.item_id
+                    GROUP BY 
+                        inventory_item.item_id";
+
+
+                    $result = $conn->query($sql);
+                    ?>
+
+                    <div class="container mt-4">
+                        <h4 class="mb-3">Drug Distribution Summary</h4>
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Drug Name</th>
+                                    <th>Total Requested</th>
+                                    <th>Total Approved</th>
+                                    <th>Total Distributed</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while($row = $result->fetch_assoc()): 
+                                    // Determine status
+                                    $status = 'Pending';
+                                    if ($row['total_distributed'] <= $row['total_approved']) {
+                                        $status = 'Completed';
+                                    } elseif ($row['total_distributed'] > 0) {
+                                        $status = 'Partially Completed';
+                                    }
+                                ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($row['item_name']) ?></td>
+                                        <td><?= (int)$row['total_distributed'] ?></td>
+                                        <td><?= (int)$row['total_approved'] ?></td>
+                                        <td><?= (int)$row['total_distributed'] ?></td>
+                                        <td>
+                                            <?php if ($status === 'Completed'): ?>
+                                                <span class="badge badge-success"><?= $status ?></span>
+                                            <?php elseif ($status === 'Partially Completed'): ?>
+                                                <span class="badge badge-info"><?= $status ?></span>
+                                            <?php else: ?>
+                                                <span class="badge badge-warning"><?= $status ?></span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#unitModal">View Units</button></td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
+                     </div>
+
 
 
                 <!-- Modal -->
