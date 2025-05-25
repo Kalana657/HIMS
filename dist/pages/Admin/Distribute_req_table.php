@@ -150,7 +150,7 @@ session_start();
                     icon: "' . $_SESSION['status'] . '",
                     confirmButtonText: "OK"
                 }).then(() => {
-                    window.location.href = "Addnewuser.php";
+                    window.location.href = "Distribute_req_table.php";
                 });
             </script>';
             
@@ -240,32 +240,37 @@ session_start();
 
                 
                 <!-- Modal -->
-                  <div class="modal fade" id="unitModal" tabindex="-1" role="dialog" aria-labelledby="unitModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                      <div class="modal-content">
-                        <div class="modal-header bg-primary text-white">
-                          <h5 class="modal-title" id="unitModalLabel">Unit Requests</h5>
-                          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                          </button>
+              <div class="modal fade" id="unitModal" tabindex="-1" role="dialog" aria-labelledby="unitModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                      <h5 class="modal-title" id="unitModalLabel">Unit Requests</h5>
+                      <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form id="approval-form">
+                        <table class="table table-sm table-striped">
+                          <thead>
+                            <tr>
+                              <th>Unit</th>
+                              <th>Distributed Qty</th>
+                              <th>Approval Qty</th>
+                            </tr>
+                          </thead>
+                          <tbody id="unit-distribution-table">
+                            <!-- Data from AJAX -->
+                          </tbody>
+                        </table>
+                        <div class="text-right">
+                          <button type="submit" class="btn btn-success">Approve</button>
                         </div>
-                        <div class="modal-body">
-                          <table class="table table-sm table-striped">
-                            <thead>
-                              <tr>
-                                <th>Unit</th>
-                                <th>Distributed Qty</th>
-                              </tr>
-                            </thead>
-                            <tbody id="unit-distribution-table">
-                             
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
+                      </form>
                     </div>
                   </div>
-
+                </div>
+              </div>
   
 
 
@@ -278,24 +283,80 @@ session_start();
 
     </main>
      <script>
-          $(document).on('click', '.view-units', function () {
+       $(document).ready(function() {
+    // View units button click
+    $(document).on('click', '.view-units', function() {
+        const itemId = $(this).data('itemid');
+        const itemName = $(this).data('itemname');
+        $('#unitModalLabel').text(`Unit Requests - ${itemName}`);
 
-            const itemId = $(this).data('itemid');
-            const itemName = $(this).data('itemname');
-            $('#unitModalLabel').text(`Unit Requests - ${itemName}`);
-
-            $.ajax({
-              url: 'get_unit_distribution.php',
-              type: 'POST',
-              data: { item_id: itemId },
-              success: function (response) {
+        $.ajax({
+            url: 'get_unit_distribution.php',
+            type: 'POST',
+            data: { item_id: itemId },
+            success: function(response) {
                 $('#unit-distribution-table').html(response);
-              },
-              error: function () {
-                $('#unit-distribution-table').html('<tr><td colspan="2">Error loading data</td></tr>');
-              }
+            },
+            error: function() {
+                $('#unit-distribution-table').html('<tr><td colspan="3">Error loading data</td></tr>');
+            }
+        });
+    });
+
+    // Form submission handler
+    $('#approval-form').on('submit', function(e) {
+        e.preventDefault();
+        
+        // Collect all approval data
+        const approvals = [];
+        let hasErrors = false;
+        
+        $('#unit-distribution-table tr').each(function() {
+            const distributionId = $(this).data('id');
+            const approvalQty = $(this).find('.approval-input').val();
+            const requestedQty = parseInt($(this).find('.approval-input').attr('max'));
+            
+            if (approvalQty === '' || isNaN(approvalQty) || approvalQty < 0) {
+                Swal.fire('Error', 'Please enter valid approval quantities for all rows.', 'error');
+                hasErrors = true;
+                return false; // break out of the loop
+            }
+            
+            if (parseInt(approvalQty) > requestedQty) {
+                Swal.fire('Error', 'Approval quantity cannot exceed requested quantity.', 'error');
+                hasErrors = true;
+                return false; // break out of the loop
+            }
+            
+            approvals.push({
+                id: distributionId,
+                qty: approvalQty
             });
-          });
+        });
+        
+        if (hasErrors) return;
+        
+        // Send all approvals at once
+        $.ajax({
+            url: 'approve_unit_distribution.php',
+            type: 'POST',
+            data: { approvals: JSON.stringify(approvals) },
+            success: function(res) {
+                Swal.fire('Success', 'Approval quantities updated.', 'success')
+                    .then(() => {
+                        $('#unitModal').modal('hide');
+                        // Optional: refresh the page or table
+                        location.reload();
+                    });
+            },
+            error: function() {
+                Swal.fire('Error', 'An error occurred while saving approvals.', 'error');
+            }
+        });
+    });
+});
+                
+       
       </script>
 
 
