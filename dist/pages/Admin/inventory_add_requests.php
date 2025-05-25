@@ -203,6 +203,8 @@ session_start();
                         inventory_subtype ON inventory_item.subtype_id = inventory_subtype.subtype_id
                     LEFT JOIN
                         item_approvals ON inventory_item.related_item_id=item_approvals.approval_id
+                    WHERE
+                    inventory_item.status=0    
 
                     ORDER BY 
                         inventory_item.created_at DESC;

@@ -6,7 +6,7 @@ if (isset($_POST['approvals'])) {
     $approvals = json_decode($_POST['approvals'], true);
     $errors = [];
     
-    // Begin transaction
+   
     $conn->begin_transaction();
     
     try {
@@ -19,7 +19,7 @@ if (isset($_POST['approvals'])) {
                 continue;
             }
             
-            // Step 1: Get item_id and current inventory quantity
+            //  Get item_id and current inventory quantity
             $check_stmt = $conn->prepare("
                 SELECT item_distributions.item_id, inventory_item.quantity AS inventory_qty
                 FROM item_distributions
@@ -41,13 +41,13 @@ if (isset($_POST['approvals'])) {
             $current_inventory_qty = $row['inventory_qty'];
             $check_stmt->close();
             
-            // Step 2: Validate available quantity
+            //  Validate available quantity
             if ($current_inventory_qty < $qty) {
                 $errors[] = "Insufficient stock for Item ID $item_id (Available: $current_inventory_qty, Requested: $qty)";
                 continue;
             }
             
-            // Step 3: Update item_distributions (approve)
+            //  Update item_distributions (approve)
             $update_dist_stmt = $conn->prepare("
                 UPDATE item_distributions 
                 SET Approval_distributed_quantity = ? 
@@ -62,7 +62,7 @@ if (isset($_POST['approvals'])) {
             }
             $update_dist_stmt->close();
             
-            // Step 4: Reduce inventory quantity
+            //  Reduce inventory quantity
             $new_qty = $current_inventory_qty - $qty;
             $update_inv_stmt = $conn->prepare("
                 UPDATE inventory_item 
