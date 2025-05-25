@@ -21,7 +21,8 @@ session_start();
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
@@ -163,6 +164,7 @@ session_start();
 
                     include('db_connect.php');
                     $sql = "SELECT 
+                        inventory_item.item_id,
                         inventory_item.item_name,
                         SUM(item_distributions.Approval_distributed_quantity) AS total_approved,
                         SUM(item_distributions.distributed_quantity) AS total_distributed
@@ -214,7 +216,20 @@ session_start();
                                                 <span class="badge badge-warning"><?= $status ?></span>
                                             <?php endif; ?>
                                         </td>
-                                        <td><button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#unitModal">View Units</button></td>
+                                         <td>
+                                          <button class="btn btn-outline-primary btn-sm view-units" 
+                                                  data-toggle="modal" 
+                                                  data-target="#unitModal" 
+                                                  data-itemid="<?= $row['item_id'] ?>" 
+                                                  data-itemname="<?= htmlspecialchars($row['item_name']) ?>">
+                                            View Units
+                                          </button>
+                                        </td>
+
+
+
+
+
                                     </tr>
                                 <?php endwhile; ?>
                             </tbody>
@@ -223,45 +238,35 @@ session_start();
 
 
 
+                
                 <!-- Modal -->
-                <div class="modal fade" id="unitModal" tabindex="-1" role="dialog" aria-labelledby="unitModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title" id="unitModalLabel">Unit Requests - Paracetamol 500mg</h5>
-                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
+                  <div class="modal fade" id="unitModal" tabindex="-1" role="dialog" aria-labelledby="unitModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                          <h5 class="modal-title" id="unitModalLabel">Unit Requests</h5>
+                          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <table class="table table-sm table-striped">
+                            <thead>
+                              <tr>
+                                <th>Unit</th>
+                                <th>Distributed Qty</th>
+                              </tr>
+                            </thead>
+                            <tbody id="unit-distribution-table">
+                             
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
                     </div>
-                    <div class="modal-body">
-                        <table class="table table-sm table-striped">
-                        <thead>
-                            <tr>
-                            <th>Unit</th>
-                            <th>Requested Qty</th>
-                            <th>Approved Qty</th>
-                            <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                            <td>Ward 01</td>
-                            <td>100</td>
-                            <td><input type="number" class="form-control form-control-sm" value="0"></td>
-                            <td><span class="badge badge-warning">Pending</span></td>
-                            </tr>
-                            <tr>
-                            <td>ICU</td>
-                            <td>200</td>
-                            <td><input type="number" class="form-control form-control-sm" value="100"></td>
-                            <td><span class="badge badge-success">Approved</span></td>
-                            </tr>
-                        </tbody>
-                        </table>
-                    </div>
-                    </div>
-                </div>
-    </div>
+                  </div>
+
+  
 
 
 
@@ -272,11 +277,27 @@ session_start();
        
 
     </main>
-      <script>
-            $(function () {
-                $('[data-toggle="tooltip"]').tooltip();
+     <script>
+          $(document).on('click', '.view-units', function () {
+
+            const itemId = $(this).data('itemid');
+            const itemName = $(this).data('itemname');
+            $('#unitModalLabel').text(`Unit Requests - ${itemName}`);
+
+            $.ajax({
+              url: 'get_unit_distribution.php',
+              type: 'POST',
+              data: { item_id: itemId },
+              success: function (response) {
+                $('#unit-distribution-table').html(response);
+              },
+              error: function () {
+                $('#unit-distribution-table').html('<tr><td colspan="2">Error loading data</td></tr>');
+              }
             });
-     </script>
+          });
+      </script>
+
 
       <footer class="app-footer">
       
