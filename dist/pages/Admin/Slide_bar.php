@@ -90,5 +90,8 @@
                         <span>Settings</span>
                     </a>
                 </li>
+                 <li class="nav-item">
+                        <a class="nav-link" href="logout.php" data-section="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                </li>
             </ul>
         </div>
