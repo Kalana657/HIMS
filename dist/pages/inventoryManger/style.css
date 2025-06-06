@@ -275,3 +275,11 @@
             background-color: var(--sri-lanka-green);
             color: white;
         }
+     
+        .rotate-icon {
+            transition: transform 0.3s ease;
+        }
+        .rotate-icon.open {
+            transform: rotate(180deg);
+        }
+
