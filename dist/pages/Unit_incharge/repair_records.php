@@ -1,0 +1,42 @@
+<?php
+
+
+include('db_connect.php');
+echo $unitid = isset($_SESSION['unitin_id']) ? intval($_SESSION['unitin_id']) : 0;
+
+if ($unitid === 0) {
+    header("Location: login.php");
+    exit();
+}
+$query = "SELECT repair_requests.*, inventory_item.*
+            FROM repair_requests
+            JOIN inventory_item ON repair_requests.item_id = inventory_item.item_id
+            WHERE repair_requests.unit_id = 1
+            ORDER BY repair_requests.created_at DESC";
+
+$result = mysqli_query($conn, $query);
+?>
+
+<h4>Repair Requests History</h4>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Item Name</th>
+            <th>Serial No.</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Requested At</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+            <tr>
+                <td><?= htmlspecialchars($row['item_name']) ?></td>
+                <td><?= htmlspecialchars($row['serial_number']) ?></td>
+                <td><?= htmlspecialchars($row['reason']) ?></td>
+                <td><?= htmlspecialchars(ucfirst($row['status'])) ?></td>
+                <td><?= htmlspecialchars($row['created_at']) ?></td>
+            </tr>
+        <?php endwhile; ?>
+    </tbody>
+</table>
