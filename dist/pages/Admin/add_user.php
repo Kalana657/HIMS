@@ -6,7 +6,9 @@ include('db_connect.php');
 $username = mysqli_real_escape_string($conn, $_POST['username']);
 $email = mysqli_real_escape_string($conn, $_POST['email']);
 $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash password
-$role_id = mysqli_real_escape_string($conn, $_POST['role']); // Optional if role is saved elsewhere
+$role_id = mysqli_real_escape_string($conn, $_POST['role']);
+$unit_id = mysqli_real_escape_string($conn, $_POST['unit']);
+ // Optional if role is saved elsewhere
 
 // Set current time (optional, if Update_time is required)
 $update_time = date("Y-m-d H:i:s");
@@ -26,8 +28,8 @@ if ($email_check_row) {
 }
 
 // Insert new user if email does not exist
-$sql = "INSERT INTO user (User_name, Email, Password, Role_id,Update_time)
-        VALUES ('$username', '$email', '$password','$role_id','$update_time')";
+$sql = "INSERT INTO user (User_name, Email, Password, Role_id,unitin_id,Update_time)
+        VALUES ('$username', '$email', '$password','$role_id','$unit_id','$update_time')";
 
 if (mysqli_query($conn, $sql)) {
     $_SESSION['status'] = "success";
