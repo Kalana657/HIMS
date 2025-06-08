@@ -1,30 +1,29 @@
 <?php
 session_start();
-include('db_connect.php'); // your DB connection
-?>
+include('db_connect.php');
+?> 
 
-<!doctype html>
+
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>HIMS ADMIN | Inventory Add Requests Table</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <!-- Bootstrap 4 CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <!-- jQuery -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HHIMS - Add Items</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+128+Text&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
-    <!-- Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-
-    <!-- Bootstrap JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+ 
 
     <!-- JsBarcode CDN for barcode generation -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
@@ -56,8 +55,17 @@ include('db_connect.php'); // your DB connection
     </style>
 </head>
 <body class="bg-light">
-<div class="container mt-4">
-    <h3 class="mb-4">Inventory Add Requests Table</h3>
+
+
+  <div class="container-fluid">
+        <div class="row">
+         
+           <?php include('Slidebari.php'); ?>
+
+       
+            <div class="col-lg-10 col-md-9 main-content">
+            
+                   <?php include('Header.php'); ?>
 
     <?php
     if (isset($_SESSION['status']) && isset($_SESSION['message'])) {
@@ -167,7 +175,8 @@ include('db_connect.php'); // your DB connection
                 <td><?= htmlspecialchars($row['subtype_name']) ?></td>
                 <td>
                     <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#detailsModal<?= $row['item_id'] ?>" title="View More">
-                        <i class="bi bi-eye-fill"></i>
+                        <i class="bi bi-upc-scan"></i>
+
                     </button>
                    
                 </td>
