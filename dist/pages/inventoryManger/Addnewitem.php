@@ -81,12 +81,7 @@ session_start();
                       <textarea id="description" name="description" class="form-control"></textarea>
                   </div>
 
-                  <!-- SN Number (always visible) -->
-                  <div class="form-group">
-                      <label for="serial_number">SN Number</label>
-                      <input type="text" id="serial_number" name="serial_number" class="form-control" required>
-                  </div>
-
+               
                   <!-- Quantity -->
                   <div class="form-group">
                       <label for="quantity">Quantity</label>
@@ -129,6 +124,14 @@ session_start();
                   <div id="item-suggestions" class="border p-3 mb-3" style="max-height: 200px; overflow-y: auto;">
                       <!-- Suggestions will load here via AJAX -->
                   </div>
+                   
+
+                  <div class="form-group" id="sn-field">
+                      <label for="serial_number">SN Number</label>
+                      <input type="text" id="serial_number" name="serial_number" class="form-control">
+                  </div>
+
+
 
                   <!-- Drug Fields (only for category_id == 2) -->
                   <div id="drug-fields" style="display: none;">
@@ -247,20 +250,23 @@ $('#category').on('change', function() {
 });
 
 
-$('#category').on('change', function() {
+$('#category').on('change', function () {
     let categoryID = $(this).val();
 
-    // Show/Hide Drug Fields
+    // Show BN fields if category == 2 (Pharmaceuticals), hide SN field
     if (categoryID == 2) {
         $('#drug-fields').show();
+        $('#sn-field').hide();
+        $('#serial_number').val('');
     } else {
         $('#drug-fields').hide();
+        $('#sn-field').show();
         $('#bn_number').val('');
         $('#manufacture_date').val('');
         $('#expiry_date').val('');
     }
 
-    // Show/Hide Warranty Fields only
+    // Show/Hide Warranty Fields for category 1 or 4
     if (categoryID == 1 || categoryID == 4) {
         $('#warranty-fields').show();
     } else {
@@ -269,20 +275,22 @@ $('#category').on('change', function() {
         $('#warranty_to').val('');
     }
 
-    // Load Types
+    // Load types
     if (categoryID) {
-        $.post('get_types.php', { category_id: categoryID }, function(html) {
+        $.post('get_types.php', { category_id: categoryID }, function (html) {
             $('#type').html(html);
             $('#subtype').html('<option value="">Select Subtype</option>');
         });
 
-        // Load Vendors for all categories
-        $.post('get_vendors.php', { category_id: categoryID }, function(html) {
+        // Load vendors
+        $.post('get_vendors.php', { category_id: categoryID }, function (html) {
             $('#vendor_id').html(html);
         });
+    } else {
+        $('#type').html('<option value="">Select Type</option>');
+        $('#subtype').html('<option value="">Select Subtype</option>');
     }
 });
-
 
 // Suggtion field
 
