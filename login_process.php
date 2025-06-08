@@ -34,6 +34,9 @@ if ($result && mysqli_num_rows($result) === 1) {
         } else if ($user['Role_id'] == 3) {
             $redirect_url = "dist/pages/Admin/dsshboard.php";
         }
+        else if ($user['Role_id'] == 4) {
+            $redirect_url = "dist/pages/Unit_incharge/dashboard.php";
+        }
 
         // Redirect with SweetAlert
         echo '
