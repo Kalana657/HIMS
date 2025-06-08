@@ -15,6 +15,10 @@
             <i class="bi bi-box-seam"></i>
             <span>Inventory</span>
         </a>
+         <a class="nav-link" href="repir.php">
+            <i class="bi bi-wrench"></i>
+            <span>Repair</span>
+        </a>
         <a class="nav-link" href="#">
             <i class="bi bi-clipboard-check"></i>
             <span>Quality Control</span>

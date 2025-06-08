@@ -1,7 +1,7 @@
 <?php
 session_start();
 
- 
+  $unitid = $_SESSION['unitin_id'];
 ?>
 
 
@@ -45,7 +45,7 @@ session_start();
                 </div>
             </div>
 
-          
+            <?php  echo $unitid;  ?>
 </div>
         <!-- Dashboard Content -->
         <div class="container-fluid dashboard-content">
