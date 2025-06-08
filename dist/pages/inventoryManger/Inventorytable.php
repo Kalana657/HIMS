@@ -169,9 +169,7 @@ include('db_connect.php'); // your DB connection
                     <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#detailsModal<?= $row['item_id'] ?>" title="View More">
                         <i class="bi bi-eye-fill"></i>
                     </button>
-                    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#updateModal<?= $row['item_id'] ?>" title="Update Item">
-                        <i class="bi bi-pencil-square"></i>
-                    </button>
+                   
                 </td>
             </tr>
 
@@ -209,11 +207,7 @@ include('db_connect.php'); // your DB connection
                                     $approvedQty = intval($row['approved_quantity']);
                                     $requestedQty = intval($row['quantity']);
                                     ?>
-                                    <div class="form-group">
-                                        <label for="quantity<?= $row['item_id'] ?>"><strong>Admin Approved Quantity</strong></label>
-                                        <input type="number" name="quantity" id="quantity<?= $row['item_id'] ?>" value="<?= $requestedQty ?>" max="<?= $approvedQty ?>" class="form-control" required oninput="validateQty<?= $row['item_id'] ?>()">
-                                        <small id="errorMsg<?= $row['item_id'] ?>" class="text-danger" style="display:none;">Requested quantity cannot exceed approved quantity!</small>
-                                    </div>
+                                    
                                     <script>
                                         function validateQty<?= $row['item_id'] ?>() {
                                             var input = document.getElementById('quantity<?= $row['item_id'] ?>');
@@ -229,10 +223,7 @@ include('db_connect.php'); // your DB connection
                                         }
                                     </script>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="comment<?= $row['item_id'] ?>"><strong>Comment</strong></label>
-                                    <textarea class="form-control" id="comment<?= $row['item_id'] ?>" rows="4"><?= htmlspecialchars($row['comment']) ?></textarea>
-                                </div>
+                             
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -241,7 +232,6 @@ include('db_connect.php'); // your DB connection
                                 <i class="bi bi-printer"></i> Print Barcode
                             </button>
                             <!-- Approve button -->
-                            <button type="button" class="btn btn-success" id="approveBtn<?= $row['item_id'] ?>" onclick="submitApproval(<?= $row['item_id'] ?>)">Approve</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         </div>
 
@@ -314,83 +304,7 @@ include('db_connect.php'); // your DB connection
             </div>
 
             <!-- Update Modal -->
-            <div class="modal fade" id="updateModal<?= $row['item_id'] ?>" tabindex="-1" aria-labelledby="updateModalLabel<?= $row['item_id'] ?>" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <form id="updateForm<?= $row['item_id'] ?>" onsubmit="return submitUpdate(<?= $row['item_id'] ?>)">
-                        <div class="modal-content">
-                            <div class="modal-header bg-warning text-dark">
-                                <h5 class="modal-title" id="updateModalLabel<?= $row['item_id'] ?>">
-                                    <i class="bi bi-pencil-square"></i> Update Item - <?= htmlspecialchars($row['item_name']) ?>
-                                </h5>
-                                <button type="button" class="close text-dark" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <!-- Editable fields -->
-                                <div class="form-group">
-                                    <label for="itemName<?= $row['item_id'] ?>">Item Name</label>
-                                    <input type="text" class="form-control" id="itemName<?= $row['item_id'] ?>" name="item_name" value="<?= htmlspecialchars($row['item_name']) ?>" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="description<?= $row['item_id'] ?>">Description</label>
-                                    <textarea class="form-control" id="description<?= $row['item_id'] ?>" name="description" rows="3"><?= htmlspecialchars($row['description']) ?></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="serialNumber<?= $row['item_id'] ?>">Serial Number</label>
-                                    <input type="text" class="form-control" id="serialNumber<?= $row['item_id'] ?>" name="serial_number" value="<?= htmlspecialchars($row['serial_number']) ?>" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="quantityUpdate<?= $row['item_id'] ?>">Quantity</label>
-                                    <input type="number" class="form-control" id="quantityUpdate<?= $row['item_id'] ?>" name="quantity" value="<?= htmlspecialchars($row['quantity']) ?>" min="1" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="categoryUpdate<?= $row['item_id'] ?>">Category</label>
-                                    <select class="form-control" id="categoryUpdate<?= $row['item_id'] ?>" name="category_id" required>
-                                        <?php
-                                        // Fetch all categories again for this form
-                                        $catResult = mysqli_query($conn, "SELECT * FROM inventory_category");
-                                        while ($catOpt = mysqli_fetch_assoc($catResult)) {
-                                            $selected = ($catOpt['category_id'] == $row['category_id']) ? "selected" : "";
-                                            echo '<option value="' . $catOpt['category_id'] . '" ' . $selected . '>' . htmlspecialchars($catOpt['category_name']) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="typeUpdate<?= $row['item_id'] ?>">Type</label>
-                                    <select class="form-control" id="typeUpdate<?= $row['item_id'] ?>" name="type_id" required>
-                                        <?php
-                                        $typeResult = mysqli_query($conn, "SELECT * FROM inventory_type");
-                                        while ($typeOpt = mysqli_fetch_assoc($typeResult)) {
-                                            $selected = ($typeOpt['type_id'] == $row['type_id']) ? "selected" : "";
-                                            echo '<option value="' . $typeOpt['type_id'] . '" ' . $selected . '>' . htmlspecialchars($typeOpt['type_name']) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="subtypeUpdate<?= $row['item_id'] ?>">Subtype</label>
-                                    <select class="form-control" id="subtypeUpdate<?= $row['item_id'] ?>" name="subtype_id" required>
-                                        <?php
-                                        $subtypeResult = mysqli_query($conn, "SELECT * FROM inventory_subtype");
-                                        while ($subtypeOpt = mysqli_fetch_assoc($subtypeResult)) {
-                                            $selected = ($subtypeOpt['subtype_id'] == $row['subtype_id']) ? "selected" : "";
-                                            echo '<option value="' . $subtypeOpt['subtype_id'] . '" ' . $selected . '>' . htmlspecialchars($subtypeOpt['subtype_name']) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <input type="hidden" name="item_id" value="<?= $row['item_id'] ?>">
-                                <button type="submit" class="btn btn-warning">Save Changes</button>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+     
         <?php endforeach; ?>
         </tbody>
     </table>
