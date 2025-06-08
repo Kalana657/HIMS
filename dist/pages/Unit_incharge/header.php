@@ -68,23 +68,6 @@ $userInitials = isset($_SESSION['username']) ? strtoupper(substr($username, 0, 2
             </div>
         </div>
         
-        <div class="unit-stats">
-            <div class="unit-stat">
-                <h3>24</h3>
-                <p>Current Patients</p>
-            </div>
-            <div class="unit-stat">
-                <h3>18</h3>
-                <p>Active Medications</p>
-            </div>
-            <div class="unit-stat">
-                <h3>5</h3>
-                <p>Low Stock Items</p>
-            </div>
-            <div class="unit-stat">
-                <h3>12</h3>
-                <p>Pending Requests</p>
-            </div>
-        </div>
+       
     </div>
 </header>

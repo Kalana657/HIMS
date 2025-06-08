@@ -11,7 +11,7 @@
             <i class="bi bi-capsule"></i>
             <span>Medications</span>
         </a>
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="inventroytable.php">
             <i class="bi bi-box-seam"></i>
             <span>Inventory</span>
         </a>
