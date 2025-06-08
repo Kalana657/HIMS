@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('db_connect.php'); // Your database connection file
+include('db_connect.php'); // your DB connection
 ?>
 
 <!doctype html>
@@ -12,30 +12,28 @@ include('db_connect.php'); // Your database connection file
 
     <!-- Bootstrap 4 CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- jQuery (Required for Bootstrap JS) -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
     <!-- Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 
-    <!-- Bootstrap 4 JS -->
+    <!-- Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <!-- Optional: AdminLTE or other CSS/JS can be included here -->
+    <!-- JsBarcode CDN for barcode generation -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 </head>
 <body class="bg-light">
 <div class="container mt-4">
     <h3 class="mb-4">Inventory Add Requests Table</h3>
 
     <?php
-    // SweetAlert2 message for session feedback
     if (isset($_SESSION['status']) && isset($_SESSION['message'])) {
         echo "
         <script>
@@ -49,15 +47,13 @@ include('db_connect.php'); // Your database connection file
         unset($_SESSION['status']);
         unset($_SESSION['message']);
     }
-    ?>
 
-    <?php
-    // Fetch data for filters
+    // Fetch filters data
     $categories = mysqli_query($conn, "SELECT * FROM inventory_category");
     $types = mysqli_query($conn, "SELECT * FROM inventory_type");
     $subtypes = mysqli_query($conn, "SELECT * FROM inventory_subtype");
 
-    // Query main items
+    // Fetch items
     $query = "
         SELECT 
             inventory_item.*,
@@ -112,16 +108,17 @@ include('db_connect.php'); // Your database connection file
     <!-- Inventory Table -->
     <table class="table table-bordered table-striped" id="inventoryTable">
         <thead class="thead-dark">
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Serial No.</th>
-                <th>Qty</th>
-                <th>Category</th>
-                <th>Type</th>
-                <th>Subtype</th>
-                <th>Action</th>
-            </tr>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Serial No.</th>
+            <th>Qty</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Subtype</th>
+            <th colspan="2">Actions</th>
+
+        </tr>
         </thead>
         <tbody>
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
@@ -137,10 +134,15 @@ include('db_connect.php'); // Your database connection file
                     <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#detailsModal<?= $row['item_id'] ?>" title="View More">
                         <i class="bi bi-eye-fill"></i>
                     </button>
+                </td>  
+                <td>  
+                    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#updateModal<?= $row['item_id'] ?>" title="Update Item">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
                 </td>
             </tr>
 
-            <!-- Modal -->
+            <!-- Details Modal with Barcode -->
             <div class="modal fade" id="detailsModal<?= $row['item_id'] ?>" tabindex="-1" aria-labelledby="detailsModalLabel<?= $row['item_id'] ?>" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
@@ -157,6 +159,8 @@ include('db_connect.php'); // Your database connection file
                                 <div class="col-md-6 mb-3 bg-light border rounded p-3">
                                     <strong>Description:</strong><br><?= nl2br(htmlspecialchars($row['description'])) ?><br><br>
                                     <strong>Serial Number:</strong><br><?= htmlspecialchars($row['serial_number']) ?><br><br>
+                                    <svg id="barcode<?= $row['item_id'] ?>"></svg><br><br>
+
                                     <strong>Batch No:</strong><br><?= htmlspecialchars($row['bn_number']) ?><br><br>
                                     <?php if ($row['vendor_id'] != 0): ?>
                                         <strong>Vendor ID:</strong><br><?= htmlspecialchars($row['vendor_id']) ?><br><br>
@@ -205,6 +209,17 @@ include('db_connect.php'); // Your database connection file
                         </div>
 
                         <script>
+                            // Generate barcode on modal shown
+                            $('#detailsModal<?= $row['item_id'] ?>').on('shown.bs.modal', function () {
+                                JsBarcode("#barcode<?= $row['item_id'] ?>", "<?= htmlspecialchars($row['serial_number']) ?>", {
+                                    format: "CODE128",
+                                    lineColor: "#0aa",
+                                    width: 2,
+                                    height: 40,
+                                    displayValue: true
+                                });
+                            });
+
                             function submitApproval(itemId) {
                                 var qtyInput = document.getElementById('quantity' + itemId);
                                 var commentInput = document.getElementById('comment' + itemId);
@@ -219,13 +234,11 @@ include('db_connect.php'); // Your database connection file
                                     return;
                                 }
 
-                                // AJAX POST to update approval (you need to create update_approval.php)
                                 $.post('update_approval.php', {
                                     item_id: itemId,
                                     approved_quantity: qtyInput.value,
                                     comment: commentInput.value
                                 }, function(response) {
-                                    // Response should be JSON with status and message
                                     try {
                                         var res = JSON.parse(response);
                                         if (res.status === 'success') {
@@ -262,6 +275,129 @@ include('db_connect.php'); // Your database connection file
                     </div>
                 </div>
             </div>
+
+            <!-- Update Modal -->
+            <div class="modal fade" id="updateModal<?= $row['item_id'] ?>" tabindex="-1" aria-labelledby="updateModalLabel<?= $row['item_id'] ?>" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <form id="updateForm<?= $row['item_id'] ?>" onsubmit="return submitUpdate(<?= $row['item_id'] ?>)">
+                        <div class="modal-content">
+                            <div class="modal-header bg-warning text-dark">
+                                <h5 class="modal-title" id="updateModalLabel<?= $row['item_id'] ?>">
+                                    <i class="bi bi-pencil-square"></i> Update Item - <?= htmlspecialchars($row['item_name']) ?>
+                                </h5>
+                                <button type="button" class="close text-dark" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Editable fields -->
+                                <div class="form-group">
+                                    <label for="itemName<?= $row['item_id'] ?>">Item Name</label>
+                                    <input type="text" class="form-control" id="itemName<?= $row['item_id'] ?>" name="item_name" value="<?= htmlspecialchars($row['item_name']) ?>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description<?= $row['item_id'] ?>">Description</label>
+                                    <textarea class="form-control" id="description<?= $row['item_id'] ?>" name="description" rows="3"><?= htmlspecialchars($row['description']) ?></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="serialNumber<?= $row['item_id'] ?>">Serial Number</label>
+                                    <input type="text" class="form-control" id="serialNumber<?= $row['item_id'] ?>" name="serial_number" value="<?= htmlspecialchars($row['serial_number']) ?>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="quantityUpdate<?= $row['item_id'] ?>">Quantity</label>
+                                    <input type="number" class="form-control" id="quantityUpdate<?= $row['item_id'] ?>" name="quantity" value="<?= htmlspecialchars($row['quantity']) ?>" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="categoryUpdate<?= $row['item_id'] ?>">Category</label>
+                                    <select class="form-control" id="categoryUpdate<?= $row['item_id'] ?>" name="category_id" required>
+                                        <?php
+                                        // Fetch all categories again for this form
+                                        $catResult = mysqli_query($conn, "SELECT * FROM inventory_category");
+                                        while ($catOpt = mysqli_fetch_assoc($catResult)) {
+                                            $selected = ($catOpt['category_id'] == $row['category_id']) ? "selected" : "";
+                                            echo '<option value="' . $catOpt['category_id'] . '" ' . $selected . '>' . htmlspecialchars($catOpt['category_name']) . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="typeUpdate<?= $row['item_id'] ?>">Type</label>
+                                    <select class="form-control" id="typeUpdate<?= $row['item_id'] ?>" name="type_id" required>
+                                        <?php
+                                        $typeResult = mysqli_query($conn, "SELECT * FROM inventory_type");
+                                        while ($typeOpt = mysqli_fetch_assoc($typeResult)) {
+                                            $selected = ($typeOpt['type_id'] == $row['type_id']) ? "selected" : "";
+                                            echo '<option value="' . $typeOpt['type_id'] . '" ' . $selected . '>' . htmlspecialchars($typeOpt['type_name']) . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="subtypeUpdate<?= $row['item_id'] ?>">Subtype</label>
+                                    <select class="form-control" id="subtypeUpdate<?= $row['item_id'] ?>" name="subtype_id" required>
+                                        <?php
+                                        $subtypeResult = mysqli_query($conn, "SELECT * FROM inventory_subtype");
+                                        while ($subtypeOpt = mysqli_fetch_assoc($subtypeResult)) {
+                                            $selected = ($subtypeOpt['subtype_id'] == $row['subtype_id']) ? "selected" : "";
+                                            echo '<option value="' . $subtypeOpt['subtype_id'] . '" ' . $selected . '>' . htmlspecialchars($subtypeOpt['subtype_name']) . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                                <!-- Add other fields as needed -->
+                            </div>
+                            <div class="modal-footer">
+                                <input type="hidden" name="item_id" value="<?= $row['item_id'] ?>">
+                                <button type="submit" class="btn btn-warning">Save Changes</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <script>
+                function submitUpdate(itemId) {
+                    event.preventDefault();
+                    var form = $('#updateForm' + itemId);
+                    var formData = form.serialize();
+
+                    $.post('update_item.php', formData, function(response) {
+                        try {
+                            var res = JSON.parse(response);
+                            if (res.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Updated!',
+                                    text: res.message
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: res.message
+                                });
+                            }
+                        } catch {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Unexpected server response'
+                            });
+                        }
+                    }).fail(function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to update item. Please try again.'
+                        });
+                    });
+
+                    return false;
+                }
+            </script>
         <?php endwhile; ?>
         </tbody>
     </table>
@@ -284,22 +420,18 @@ include('db_connect.php'); // Your database connection file
                 var desc = row.find('td:nth-child(2)').text().toLowerCase();
                 var serial = row.find('td:nth-child(3)').text().toLowerCase();
 
-                var categoryMatch = category === "" || rowCategory === category;
-                var typeMatch = type === "" || rowType === type;
-                var subtypeMatch = subtype === "" || rowSubtype === subtype;
-                var searchMatch = name.includes(search) || desc.includes(search) || serial.includes(search);
+                var matches = true;
+                if (category && category !== 'all' && rowCategory !== category) matches = false;
+                if (type && type !== 'all' && rowType !== type) matches = false;
+                if (subtype && subtype !== 'all' && rowSubtype !== subtype) matches = false;
+                if (search && !name.includes(search) && !desc.includes(search) && !serial.includes(search)) matches = false;
 
-                if (categoryMatch && typeMatch && subtypeMatch && searchMatch) {
-                    row.show();
-                } else {
-                    row.hide();
-                }
+                row.toggle(matches);
             });
         }
 
         $('#filterCategory, #filterType, #filterSubtype, #searchInput').on('input change', filterTable);
+
+        filterTable(); // Initial filter
     });
 </script>
-
-</body>
-</html>
