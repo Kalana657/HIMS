@@ -17,6 +17,9 @@ if ($result && mysqli_num_rows($result) === 1) {
         // Save user session
         $_SESSION['user_id'] = $user['User_id'];
         $_SESSION['username'] = $user['User_name'];
+         $_SESSION['email']       = $user['Email'];
+        $_SESSION['role_id']     = $user['Role_id'];     // ✅ ADD THIS
+       $_SESSION['unitin_id']   = $user['unitin_id'];
 
         // Log user access
         $ip_address = $_SERVER['REMOTE_ADDR'];
