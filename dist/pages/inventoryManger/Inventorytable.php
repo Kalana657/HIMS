@@ -28,6 +28,32 @@ include('db_connect.php'); // your DB connection
 
     <!-- JsBarcode CDN for barcode generation -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
+    <style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .print-barcode-container, 
+        .print-barcode-container * {
+            visibility: visible;
+        }
+        .print-barcode-container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            margin: 0;
+            padding: 20px;
+        }
+        .no-print {
+            display: none !important;
+        }
+        .barcode-print {
+            margin: 20px auto;
+        }
+    }
+    </style>
 </head>
 <body class="bg-light">
 <div class="container mt-4">
@@ -53,7 +79,7 @@ include('db_connect.php'); // your DB connection
     $types = mysqli_query($conn, "SELECT * FROM inventory_type");
     $subtypes = mysqli_query($conn, "SELECT * FROM inventory_subtype");
 
-    // Fetch items
+    // Fetch items and store in array for reuse
     $query = "
         SELECT 
             inventory_item.*,
@@ -72,6 +98,10 @@ include('db_connect.php'); // your DB connection
         ORDER BY inventory_item.created_at DESC
     ";
     $result = mysqli_query($conn, $query);
+    $items = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $items[] = $row;
+    }
     ?>
 
     <!-- Filters -->
@@ -79,7 +109,9 @@ include('db_connect.php'); // your DB connection
         <div class="col-md-3">
             <select id="filterCategory" class="form-control">
                 <option value="">All Categories</option>
-                <?php while ($cat = mysqli_fetch_assoc($categories)): ?>
+                <?php 
+                mysqli_data_seek($categories, 0);
+                while ($cat = mysqli_fetch_assoc($categories)): ?>
                     <option value="<?= htmlspecialchars($cat['category_name']) ?>"><?= htmlspecialchars($cat['category_name']) ?></option>
                 <?php endwhile; ?>
             </select>
@@ -87,7 +119,9 @@ include('db_connect.php'); // your DB connection
         <div class="col-md-3">
             <select id="filterType" class="form-control">
                 <option value="">All Types</option>
-                <?php while ($type = mysqli_fetch_assoc($types)): ?>
+                <?php 
+                mysqli_data_seek($types, 0);
+                while ($type = mysqli_fetch_assoc($types)): ?>
                     <option value="<?= htmlspecialchars($type['type_name']) ?>"><?= htmlspecialchars($type['type_name']) ?></option>
                 <?php endwhile; ?>
             </select>
@@ -95,7 +129,9 @@ include('db_connect.php'); // your DB connection
         <div class="col-md-3">
             <select id="filterSubtype" class="form-control">
                 <option value="">All Subtypes</option>
-                <?php while ($sub = mysqli_fetch_assoc($subtypes)): ?>
+                <?php 
+                mysqli_data_seek($subtypes, 0);
+                while ($sub = mysqli_fetch_assoc($subtypes)): ?>
                     <option value="<?= htmlspecialchars($sub['subtype_name']) ?>"><?= htmlspecialchars($sub['subtype_name']) ?></option>
                 <?php endwhile; ?>
             </select>
@@ -116,12 +152,11 @@ include('db_connect.php'); // your DB connection
             <th>Category</th>
             <th>Type</th>
             <th>Subtype</th>
-            <th colspan="2">Actions</th>
-
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+        <?php foreach ($items as $row): ?>
             <tr>
                 <td><?= htmlspecialchars($row['item_name']) ?></td>
                 <td><?= htmlspecialchars($row['description']) ?></td>
@@ -134,8 +169,6 @@ include('db_connect.php'); // your DB connection
                     <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#detailsModal<?= $row['item_id'] ?>" title="View More">
                         <i class="bi bi-eye-fill"></i>
                     </button>
-                </td>  
-                <td>  
                     <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#updateModal<?= $row['item_id'] ?>" title="Update Item">
                         <i class="bi bi-pencil-square"></i>
                     </button>
@@ -203,7 +236,11 @@ include('db_connect.php'); // your DB connection
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <!-- Approve button submits via AJAX -->
+                            <!-- Print button -->
+                            <button type="button" class="btn btn-info" onclick="printBarcode(<?= $row['item_id'] ?>, '<?= htmlspecialchars($row['item_name']) ?>', '<?= htmlspecialchars($row['serial_number']) ?>')">
+                                <i class="bi bi-printer"></i> Print Barcode
+                            </button>
+                            <!-- Approve button -->
                             <button type="button" class="btn btn-success" id="approveBtn<?= $row['item_id'] ?>" onclick="submitApproval(<?= $row['item_id'] ?>)">Approve</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         </div>
@@ -344,7 +381,6 @@ include('db_connect.php'); // your DB connection
                                         ?>
                                     </select>
                                 </div>
-                                <!-- Add other fields as needed -->
                             </div>
                             <div class="modal-footer">
                                 <input type="hidden" name="item_id" value="<?= $row['item_id'] ?>">
@@ -355,50 +391,7 @@ include('db_connect.php'); // your DB connection
                     </form>
                 </div>
             </div>
-
-            <script>
-                function submitUpdate(itemId) {
-                    event.preventDefault();
-                    var form = $('#updateForm' + itemId);
-                    var formData = form.serialize();
-
-                    $.post('update_item.php', formData, function(response) {
-                        try {
-                            var res = JSON.parse(response);
-                            if (res.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Updated!',
-                                    text: res.message
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: res.message
-                                });
-                            }
-                        } catch {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Unexpected server response'
-                            });
-                        }
-                    }).fail(function() {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Failed to update item. Please try again.'
-                        });
-                    });
-
-                    return false;
-                }
-            </script>
-        <?php endwhile; ?>
+        <?php endforeach; ?>
         </tbody>
     </table>
 </div>
@@ -431,7 +424,125 @@ include('db_connect.php'); // your DB connection
         }
 
         $('#filterCategory, #filterType, #filterSubtype, #searchInput').on('input change', filterTable);
-
         filterTable(); // Initial filter
     });
+
+    function printBarcode(itemId, itemName, serialNumber) {
+        var printWindow = window.open('', '_blank');
+        if (!printWindow) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Popup blocked',
+                text: 'Please allow popups for this site to enable printing.'
+            });
+            return;
+        }
+
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Barcode Print - ${itemName}</title>
+                <style>
+                    body { 
+                        font-family: Arial, sans-serif;
+                        text-align: center;
+                        padding: 20px;
+                    }
+                    .barcode-container {
+                        margin: 50px auto;
+                        max-width: 400px;
+                    }
+                    .item-name {
+                        font-size: 18px;
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                    }
+                    .serial-number {
+                        font-size: 14px;
+                        margin-bottom: 20px;
+                    }
+                    .print-date {
+                        font-size: 12px;
+                        margin-top: 20px;
+                        color: #666;
+                    }
+                    @page {
+                        size: auto;
+                        margin: 5mm;
+                    }
+                </style>
+                <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
+            </head>
+            <body>
+                <div class="barcode-container">
+                    <div class="item-name">${itemName}</div>
+                    <div class="serial-number">SN: ${serialNumber}</div>
+                    <svg class="barcode"></svg>
+                    <div class="print-date">Printed on: ${new Date().toLocaleString()}</div>
+                </div>
+                <script>
+                    window.onload = function() {
+                        JsBarcode(".barcode", "${serialNumber}", {
+                            format: "CODE128",
+                            lineColor: "#000",
+                            width: 2,
+                            height: 60,
+                            displayValue: true,
+                            fontSize: 14
+                        });
+                        setTimeout(function() {
+                            window.print();
+                            window.close();
+                        }, 200);
+                    }
+                <\/script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+
+    function submitUpdate(itemId) {
+        event.preventDefault();
+        var form = $('#updateForm' + itemId);
+        var formData = form.serialize();
+
+        $.post('update_item.php', formData, function(response) {
+            try {
+                var res = JSON.parse(response);
+                if (res.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Updated!',
+                        text: res.message
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: res.message
+                    });
+                }
+            } catch {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Unexpected server response'
+                });
+            }
+        }).fail(function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to update item. Please try again.'
+            });
+        });
+
+        return false;
+    }
 </script>
+</body>
+</html>
