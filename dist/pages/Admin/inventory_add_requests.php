@@ -157,7 +157,7 @@ session_start();
                     icon: "' . $_SESSION['status'] . '",
                     confirmButtonText: "OK"
                 }).then(() => {
-                    window.location.href = "inventory_add_request.php";
+                    window.location.href = "inventory_add_requests.php";
                 });
             </script>';
             
@@ -370,6 +370,8 @@ session_start();
                                                     <div class="form-group">
                                                         <label><strong>Approved Quantity</strong></label>
                                                         <input type="text" class="form-control" value="<?= htmlspecialchars($approvedQty) ?>" readonly>
+                                                         <input type="text"  name="item_id" class="form-control" value="<?= $row['item_id'] ?>" readonly>
+
                                                         <div class="mt-2">
                                                             <span class="badge <?= $qtyClass ?>"><?= $qtyNote ?></span>
                                                         </div>
@@ -377,6 +379,7 @@ session_start();
 
                                                     <div class="form-group">
                                                         <label for="quantity<?= $row['item_id'] ?>"><strong>Edit Requested Quantity</strong></label>
+
                                                         <input type="number" name="quantity" id="quantity<?= $row['item_id'] ?>" value="<?= htmlspecialchars($requestedQty) ?>" class="form-control" max="<?= $approvedQty ?>" required oninput="validateQty<?= $row['item_id'] ?>()">
                                                         <small id="errorMsg<?= $row['item_id'] ?>" class="text-danger" style="display:none;">Requested quantity cannot exceed approved quantity!</small>
                                                     </div>

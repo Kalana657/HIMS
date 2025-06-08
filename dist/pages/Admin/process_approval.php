@@ -3,16 +3,16 @@ session_start();
 include('db_connect.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $item_id = intval($_POST['item_id']);
-    $quantity = intval($_POST['quantity']);
-    $comment = trim($_POST['comment']);
+   echo $item_id = intval($_POST['item_id']);
+   echo $quantity = intval($_POST['quantity']);
+   echo $comment = trim($_POST['comment']);
 
     if (isset($_POST['approve'])) {
         $status = 'approved';
-        $status_code = 1;
+       echo $status_code = 1;
     } elseif (isset($_POST['reject'])) {
         $status = 'rejected';
-        $status_code = 2;
+        echo $status_code = 2;
     } else {
         $_SESSION['status'] = 'error';
         $_SESSION['message'] = 'Invalid action.';
