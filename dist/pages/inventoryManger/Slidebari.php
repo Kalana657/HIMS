@@ -27,6 +27,12 @@
 
           </a>
         </li>
+          <li class="nav-item">
+          <a href="UPInventorytable.php" class="nav-link">
+            <i class="bi bi-arrow-repeat me-2"></i> Update Inventory Quntity
+
+          </a>
+        </li>
         
       </ul>
     </li>
