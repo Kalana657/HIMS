@@ -21,6 +21,12 @@
             <i class="bi bi-plus-square me-2"></i> Add New Item
           </a>
         </li>
+        <li class="nav-item">
+          <a href="Inventorytable.php" class="nav-link">
+            <i class="bi bi-table me-2"></i> Inventory Table
+
+          </a>
+        </li>
         
       </ul>
     </li>
