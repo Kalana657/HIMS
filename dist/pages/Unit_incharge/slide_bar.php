@@ -1,5 +1,5 @@
  <nav class="sidebar-unit">
-        <a class="nav-link active" href="#">
+        <a class="nav-link active" href="dashboard.php">
             <i class="bi bi-speedometer2"></i>
             <span>Dashboard</span>
         </a>
@@ -27,4 +27,9 @@
             <i class="bi bi-file-earmark-text"></i>
             <span>Reports</span>
         </a>
+        <a class="nav-link" href="logout.php">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+        </a>
+
     </nav>
