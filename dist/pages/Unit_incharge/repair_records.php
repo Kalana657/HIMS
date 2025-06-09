@@ -8,9 +8,10 @@ if ($unitid === 0) {
     header("Location: login.php");
     exit();
 }
-$query = "SELECT repair_requests.*, inventory_item.*
+$query = "SELECT repair_requests.*, inventory_item.*,repair_stages.* 
             FROM repair_requests
             JOIN inventory_item ON repair_requests.item_id = inventory_item.item_id
+            JOIN repair_stages ON repair_requests.status = repair_stages.stage_id
             WHERE repair_requests.unit_id = 1
             ORDER BY repair_requests.created_at DESC";
 
@@ -34,7 +35,7 @@ $result = mysqli_query($conn, $query);
                 <td><?= htmlspecialchars($row['item_name']) ?></td>
                 <td><?= htmlspecialchars($row['serial_number']) ?></td>
                 <td><?= htmlspecialchars($row['reason']) ?></td>
-                <td><?= htmlspecialchars(ucfirst($row['status'])) ?></td>
+                <td><?= htmlspecialchars(ucfirst($row['stage_name'])) ?></td>
                 <td><?= htmlspecialchars($row['created_at']) ?></td>
             </tr>
         <?php endwhile; ?>
