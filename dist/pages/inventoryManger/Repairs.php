@@ -147,7 +147,7 @@ while ($row = mysqli_fetch_assoc($result)):
         <?php if (!empty($row['image_path'])): ?>
         <div class="mb-3">
             <strong>Uploaded Image:</strong><br>
-            <img src="<?= htmlspecialchars($row['image_path']) ?>" class="img-fluid border rounded" style="max-height:300px;">
+            <img src="<?= '../Unit_incharge/uploads/repair_images/' . htmlspecialchars($row['image_path']) ?>" class="img-fluid border rounded" style="max-height:300px;">
         </div>
         <?php else: ?>
         <p><strong>Uploaded Image:</strong> No image available.</p>
@@ -192,6 +192,7 @@ while ($row = mysqli_fetch_assoc($result)):
                 ?>
                 <li class="list-group-item">
                     <strong><?= htmlspecialchars($log['stage_name']) ?></strong>
+                     — <?= htmlspecialchars($log['updated_at']) ?>
                    
                 </li>
                 <?php endwhile; else: ?>
