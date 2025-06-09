@@ -12,7 +12,7 @@ $query = "SELECT repair_requests.*, inventory_item.*,repair_stages.*
             FROM repair_requests
             JOIN inventory_item ON repair_requests.item_id = inventory_item.item_id
             JOIN repair_stages ON repair_requests.status = repair_stages.stage_id
-            WHERE repair_requests.unit_id = 1
+            WHERE repair_requests.unit_id = $unitid 
             ORDER BY repair_requests.created_at DESC";
 
 $result = mysqli_query($conn, $query);

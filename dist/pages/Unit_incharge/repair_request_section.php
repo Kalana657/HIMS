@@ -33,7 +33,7 @@
                 JOIN 
                     user ON user.unitin_id = item_distributions.unit_id
                 WHERE 
-                    item_distributions.unit_id = $unitid AND inventory_item.category_id != 2;
+                    item_distributions.unit_id = $unitid AND inventory_item.category_id != 2 AND item_distributions.remarks=0;
             ";
             $result = mysqli_query($conn, $query);
             $items = [];

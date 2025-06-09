@@ -48,13 +48,27 @@ $stmt = $conn->prepare("INSERT INTO repair_requests (item_id, unit_id, reason, i
 if (!$stmt) {
     $_SESSION['status'] = 'error';
     $_SESSION['message'] = 'Database prepare error: ' . $conn->error;
-    header("Location: index.php");
+    
     exit();
 }
 $stmt->bind_param("iiss", $item_id, $unit_id, $reason, $image_path);
 $success = $stmt->execute();
 
-if ($success) {
+$updateStmt = $conn->prepare("UPDATE item_distributions SET `remarks` = '1' WHERE item_id = ? AND unit_id = ?");
+if (!$updateStmt) {
+    $_SESSION['status'] = 'error';
+    $_SESSION['message'] = 'Database prepare error (update): ' . $conn->error;
+    
+    exit();
+}
+$updateStmt->bind_param("ii", $item_id, $unit_id);
+$updateStmt->execute();
+$updateStmt->close();
+
+
+
+
+if ($success && $updateStmt) {
    
 
     $_SESSION['status'] = 'success';
