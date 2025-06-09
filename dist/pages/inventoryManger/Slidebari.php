@@ -1,12 +1,17 @@
 <div class="col-lg-2 col-md-3 sidebar d-flex flex-column p-0">
-  <div class="logo">
-    <h3><i class="bi bi-heart-pulse me-2"></i> HHIMS</h3>
-    <p class="text-white-50 mb-0">Inventory Management</p>
-  </div>
+     <div class="logo">
+                <h3><i class="bi bi-heart-pulse me-2"></i>  
+                <img src="../../../images/logo.jpeg" style="width:105px; height:75px;">
+
+
+            
+                 </h3>
+                <p class="text-white-50 mb-0">Hospital Inventory Management System</p>
+       </div>
   <ul class="nav flex-column flex-grow-1 pt-3">
     <!-- Dashboard -->
     <li class="nav-item">
-      <a class="nav-link active" href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a class="nav-link active" href="dsshboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
     </li>
 
     
@@ -32,6 +37,15 @@
             <i class="bi bi-arrow-repeat me-2"></i> Update Inventory Quntity
 
           </a>
+
+        </li>
+
+          <li class="nav-item">
+          <a href="inventory_add_requests.php" class="nav-link">
+            <i class="bi bi-arrow-repeat me-2"></i> Inventory Add Requests
+
+          </a>
+
         </li>
         
       </ul>
@@ -46,9 +60,7 @@
     <li class="nav-item">
       <a class="nav-link" href="Repairs.php"><i class="bi bi-tools"></i> Repairs</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#"><i class="bi bi-people"></i> User Management</a>
-    </li>
+    
    
     <li class="nav-item">
     <a href="#submenuDistribution" class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="submenuDistribution">
@@ -78,7 +90,7 @@
       <a class="nav-link" href="#"><i class="bi bi-gear"></i> Settings</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#"><i class="bi bi-box-arrow-right"></i> Logout</a>
+      <a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
     </li>
   </ul>
 </div>
