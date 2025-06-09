@@ -1,6 +1,6 @@
 <div class="col-lg-2 col-md-3 sidebar d-flex flex-column p-0">
   <div class="logo">
-    <h3><i class="bi bi-heart-pulse me-2"></i> Ayubowan Health</h3>
+    <h3><i class="bi bi-heart-pulse me-2"></i> HHIMS</h3>
     <p class="text-white-50 mb-0">Inventory Management</p>
   </div>
   <ul class="nav flex-column flex-grow-1 pt-3">
@@ -44,7 +44,7 @@
       <a class="nav-link" href="#"><i class="bi bi-cart"></i> Procurement</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#"><i class="bi bi-tools"></i> Repairs</a>
+      <a class="nav-link" href="Repairs.php"><i class="bi bi-tools"></i> Repairs</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="#"><i class="bi bi-people"></i> User Management</a>
