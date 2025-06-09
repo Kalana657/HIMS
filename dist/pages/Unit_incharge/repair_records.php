@@ -8,12 +8,20 @@ if ($unitid === 0) {
     header("Location: login.php");
     exit();
 }
-$query = "SELECT repair_requests.*, inventory_item.*,repair_stages.* 
-            FROM repair_requests
-            JOIN inventory_item ON repair_requests.item_id = inventory_item.item_id
-            JOIN repair_stages ON repair_requests.status = repair_stages.stage_id
-            WHERE repair_requests.unit_id = $unitid 
-            ORDER BY repair_requests.created_at DESC";
+$query = "SELECT 
+    repair_requests.*, 
+    inventory_item.*, 
+    repair_stages.stage_name, 
+    units.unit_name 
+FROM 
+repair_requests
+LEFT JOIN inventory_item ON repair_requests.item_id = inventory_item.item_id
+LEFT JOIN repair_stages ON repair_requests.status = repair_stages.stage_id
+LEFT JOIN units ON repair_requests.unit_id = units.unit_id
+WHERE 
+    repair_requests.unit_id = $unitid
+ORDER BY 
+    repair_requests.created_at DESC";
 
 $result = mysqli_query($conn, $query);
 ?>

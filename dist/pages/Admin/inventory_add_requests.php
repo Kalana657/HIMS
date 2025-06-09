@@ -16,9 +16,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HIMS</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+128+Text&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+ 
     
     <link href="adminstyle.css" rel="stylesheet">
 </head>
@@ -263,7 +273,7 @@
                                                     <div class="form-group">
                                                         <label><strong>Approved Quantity</strong></label>
                                                         <input type="text" class="form-control" value="<?= htmlspecialchars($approvedQty) ?>" readonly>
-                                                         <input type="text"  name="item_id" class="form-control" value="<?= $row['item_id'] ?>" readonly>
+                                                         <input type="text"  name="item_id" class="form-control" value="<?= $row['item_id'] ?>" readonly hidden>
 
                                                         <div class="mt-2">
                                                             <span class="badge <?= $qtyClass ?>"><?= $qtyNote ?></span>

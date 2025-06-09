@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     mysqli_close($conn);
-    header("Location: AddUserRole.php");
+    header("Location: Addnewrole.php");
     exit;
 }
 ?>

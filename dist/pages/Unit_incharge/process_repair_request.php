@@ -44,7 +44,7 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
 }
 
 // Insert repair request into database
-$stmt = $conn->prepare("INSERT INTO repair_requests (item_id, unit_id, reason, image_path, status, created_at) VALUES (?, ?, ?, ?, 'pending', NOW())");
+$stmt = $conn->prepare("INSERT INTO repair_requests (item_id, unit_id, reason, image_path, status, created_at) VALUES (?, ?, ?, ?, 1, NOW())");
 if (!$stmt) {
     $_SESSION['status'] = 'error';
     $_SESSION['message'] = 'Database prepare error: ' . $conn->error;

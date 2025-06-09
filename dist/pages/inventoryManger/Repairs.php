@@ -86,12 +86,21 @@ include('db_connect.php');
                 ?>
                 <?php   
                 
-                $query = "SELECT repair_requests.*, inventory_item.*,repair_stages.* 
-                        FROM repair_requests
-                        JOIN inventory_item ON repair_requests.item_id = inventory_item.item_id
-                        JOIN repair_stages ON repair_requests.status = repair_stages.stage_id
-                        WHERE repair_requests.unit_id = 1
-                        ORDER BY repair_requests.created_at DESC";
+                $query = "SELECT 
+                        repair_requests.*, 
+                        inventory_item.*, 
+                        repair_stages.*,
+                        units.unit_name 
+                    FROM 
+                        repair_requests
+                    LEFT JOIN 
+                        inventory_item ON repair_requests.item_id = inventory_item.item_id
+                    LEFT JOIN 
+                        repair_stages ON repair_requests.status = repair_stages.stage_id
+                    LEFT JOIN 
+                         units ON repair_requests.unit_id = units.unit_id    
+                    ORDER BY 
+                        repair_requests.created_at DESC";
 
             $result = mysqli_query($conn, $query);
             ?>
@@ -104,6 +113,7 @@ include('db_connect.php');
                         <th>Serial No.</th>
                         <th>Reason</th>
                         <th>Status</th>
+                        <th>Requested Unit</th>
                         <th>Requested At</th>
                         <th>Action</th>
                     </tr>
@@ -115,6 +125,7 @@ include('db_connect.php');
                             <td><?= htmlspecialchars($row['serial_number']) ?></td>
                             <td><?= htmlspecialchars($row['reason']) ?></td>
                             <td><?= htmlspecialchars(ucfirst($row['stage_name'])) ?></td>
+                            <td><?= htmlspecialchars(ucfirst($row['unit_name'])) ?></td>
                             <td><?= htmlspecialchars($row['created_at']) ?></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#viewModal<?= $row['request_id'] ?>">
