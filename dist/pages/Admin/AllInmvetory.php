@@ -19,7 +19,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <link href="adminstyle.css" rel="stylesheet">
 </head>
 <body>
@@ -97,7 +97,7 @@
                     LEFT JOIN
                         item_approvals ON inventory_item.related_item_id=item_approvals.approval_id
                     WHERE
-                    inventory_item.status=0    
+                    inventory_item.status=1    
 
                     ORDER BY 
                         inventory_item.created_at DESC;

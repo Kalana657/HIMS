@@ -10,7 +10,7 @@
             </div>
             <ul class="nav flex-column mt-4">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">
+                    <a class="nav-link active" href="dsshboard.php">
                         <i class="bi bi-speedometer2"></i>
                         <span>Dashboard</span>
                     </a>
@@ -23,8 +23,8 @@
                         <span class="badge bg-danger rounded-pill">42</span>
                     </a>
                     <ul class="collapse list-unstyled ps-4" id="inventorySubMenu">
-                        <li><a class="nav-link" href="#">All Items</a></li>
-                        <li><a class="nav-link" href="#">Add New Item</a></li>
+                        <li><a class="nav-link" href="AllInmvetory.php">All Items</a></li>
+                        <li><a class="nav-link" href="inventory_add_requests.php">Inventory Add Requests</a></li>
                         <li><a class="nav-link" href="#">Categories</a></li>
                         <li><a class="nav-link" href="#">Vendors</a></li>
                     </ul>
@@ -49,18 +49,18 @@
                         <span><i class="bi bi-people me-2"></i>User Mangement</span>
                         <i class="bi bi-chevron-down"></i>
                     </a>
-                    <ul class="collapse ps-3 submenu-style" id="usersSubMenu">
-                        <li><a class="nav-link sub-link" href="Addnewuser.php"> Add New User</a></li>
-                        <li><a class="nav-link sub-link" href="Addnewrole.php"> Add New User Role</a></li>
-                        <li><a class="nav-link sub-link" href="Add_unit.php"> Add Unit/Wards</a></li>
-                        <li><a class="nav-link sub-link" href="#">Permissions</a></li>
+                     <ul class="collapse list-unstyled ps-4" id="usersSubMenu">
+                        <li><a class="nav-link " href="Addnewuser.php"> Add New User</a></li>
+                        <li><a class="nav-link " href="Addnewrole.php"> Add New User Role</a></li>
+                        <li><a class="nav-link " href="Add_unit.php"> Add Unit/Wards</a></li>
+                        <li><a class="nav-link " href="#">Permissions</a></li>
                     </ul>
                 </li>
 
 
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="Distribute_req_table.php">
                         <i class="bi bi-truck"></i>
                         <span>Distribution</span>
                     </a>
