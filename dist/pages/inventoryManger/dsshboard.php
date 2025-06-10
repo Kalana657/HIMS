@@ -92,7 +92,7 @@
                             </div>
                             <h5>Barcode Management</h5>
                             <p>Generate and manage barcodes for all inventory items with automatic system generation</p>
-                            <div class="barcode mt-3">MED2023SL001245</div>
+                            
                         </div>
                     </div>
                     
