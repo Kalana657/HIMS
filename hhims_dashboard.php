@@ -202,14 +202,27 @@
                             <input type="password" class="form-control input-with-icon" id="password" placeholder="Enter password" required>
                         </div>
                     </div>
-
-                    <div class="mb-3 d-flex justify-content-between align-items-center">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="rememberMe">
-                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                       <div class="mb-3">
+                        <label for="unit" class="form-label">Select Unit</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-building"></i></span>
+                            <select class="form-control input-with-icon" id="unit" required>
+                                <option value="">-- Select Unit --</option>
+                                <option value="OPD">Outpatient Department (OPD)</option>
+                                <option value="Clinic">Clinic</option>
+                                <option value="Pharmacy">Pharmacy</option>
+                                <option value="Laboratory">Laboratory</option>
+                                <option value="Ward1">Ward 1</option>
+                                <option value="Ward2">Ward 2</option>
+                                <!-- Add more units as needed -->
+                            </select>
                         </div>
-                        <a href="#" class="forgot-password">Forgot password?</a>
                     </div>
+
+
+
+
+                    
 
                     <button type="submit" class="btn btn-login mb-3">
                         <i class="fas fa-sign-in-alt me-2"></i> Login
