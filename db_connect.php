@@ -9,6 +9,6 @@ $conn = mysqli_connect($host, $db_user, $db_pass, $db_name);
 
 // Check connection
 if ($conn) {
-    echo"hi";
+   
 }
 ?>
