@@ -186,12 +186,12 @@
 
             <!-- Login Form -->
             <div class="login-body">
-                <form>
+                <form action="login.php" method="POST">
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
-                            <input type="text" class="form-control input-with-icon" id="username" placeholder="Enter username" required>
+                            <input type="text" class="form-control input-with-icon" id="username" placeholder="Enter username" name="username" required>
                         </div>
                     </div>
 
@@ -199,25 +199,35 @@
                         <label for="password" class="form-label">Password</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                            <input type="password" class="form-control input-with-icon" id="password" placeholder="Enter password" required>
+                            <input type="password" class="form-control input-with-icon" id="password" placeholder="Enter password" name="password" required>
                         </div>
                     </div>
                        <div class="mb-3">
                         <label for="unit" class="form-label">Select Unit</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-building"></i></span>
-                            <select class="form-control input-with-icon" id="unit" required>
-                                <option value="">-- Select Unit --</option>
-                                <option value="OPD">Outpatient Department (OPD)</option>
-                                <option value="Clinic">Clinic</option>
-                                <option value="Pharmacy">Pharmacy</option>
-                                <option value="Laboratory">Laboratory</option>
-                                <option value="Ward1">Ward 1</option>
-                                <option value="Ward2">Ward 2</option>
-                                <!-- Add more units as needed -->
-                            </select>
+                             <?php include('db_connect.php'); ?> 
+
+                                <select class="form-control input-with-icon" id="unit" name="unit" required>
+                                    <option value="">-- Select Unit --</option>
+                                    <?php
+                                        $sql = "SELECT unit_id, unit_name, description FROM units";
+                                        $result = $conn->query($sql);
+
+                                        if ($result->num_rows > 0) {
+                                            while($row = $result->fetch_assoc()) {
+                                                echo '<option value="' . $row["unit_id"] . '">' . htmlspecialchars($row["unit_name"]) . ' (' . htmlspecialchars($row["description"]) . ')</option>';
+                                            }
+                                        } else {
+                                            echo '<option disabled>No units found</option>';
+                                        }
+
+                                        $conn->close();
+                                    ?>
+                                </select>
+
                         </div>
-                    </div>
+                      </div>
 
 
 
