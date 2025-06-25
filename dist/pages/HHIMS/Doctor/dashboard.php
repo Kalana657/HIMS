@@ -82,11 +82,10 @@ session_start();
                     </div>
                 </div>
 
-                <!-- Main Content Row -->
+                
                 <div class="row mt-4">
-                    <!-- Patient List & Drug Inventory -->
                     <div class="col-lg-5">
-                        <!-- Patient List -->
+                        
                         <div class="card">
                             <div class="card-header">
                                 <div>

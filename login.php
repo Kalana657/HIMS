@@ -30,7 +30,7 @@ if ($result->num_rows === 1) {
             $_SESSION['unitin_id'] = $row['unitin_id'];
 
             // Redirect to dashboard or main system
-            header("Location: dist/Doctor/dashboard.php");
+            header("Location: dist/pages/HHIMS/Doctor/dashboard.php");
             exit();
         } else {
             echo "Access denied. Invalid role.";
