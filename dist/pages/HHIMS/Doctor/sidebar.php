@@ -6,7 +6,7 @@
                   
                     
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="prescription.php">
                             <i class="fas fa-file-prescription"></i> <span>Prescriptions</span>
                             <span class="notification-badge">5</span>
                         </a>
