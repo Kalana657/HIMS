@@ -1,3 +1,8 @@
+<?php
+session_start();
+
+  $unitid = $_SESSION['unitin_id'];
+?>
 
 <!DOCTYPE html>
 <html lang="en">
