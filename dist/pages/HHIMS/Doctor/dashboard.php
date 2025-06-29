@@ -83,156 +83,63 @@ session_start();
                 </div>
 
                 
-                <div class="row mt-4">
-                    <div class="col-lg-5">
-                        
-                        <div class="card">
-                            <div class="card-header">
-                                <div>
-                                    <i class="fas fa-user-injured"></i> Recent Patients
-                                </div>
-                                <button class="btn btn-outline-hospital btn-sm">
-                                    <i class="fas fa-plus me-1"></i> New Patient
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <div class="patient-list">
-                                    <div class="patient-item active">
-                                        <div class="patient-avatar">NR</div>
-                                        <div class="patient-info">
-                                            <h6>Nimal Rajapaksa</h6>
-                                            <div class="meta">
-                                                <span>ID: SL-2023-0012</span>
-                                                <span>54 years</span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span class="badge bg-success">Completed</span>
-                                        </div>
-                                    </div>
-                                    <div class="patient-item">
-                                        <div class="patient-avatar">SJ</div>
-                                        <div class="patient-info">
-                                            <h6>Samantha Jayasuriya</h6>
-                                            <div class="meta">
-                                                <span>ID: SL-2023-0045</span>
-                                                <span>32 years</span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span class="badge bg-warning">Pending</span>
-                                        </div>
-                                    </div>
-                                    <div class="patient-item">
-                                        <div class="patient-avatar">KP</div>
-                                        <div class="patient-info">
-                                            <h6>Kamala Perera</h6>
-                                            <div class="meta">
-                                                <span>ID: SL-2023-0033</span>
-                                                <span>67 years</span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span class="badge bg-danger">Urgent</span>
-                                        </div>
-                                    </div>
-                                    <div class="patient-item">
-                                        <div class="patient-avatar">DG</div>
-                                        <div class="patient-info">
-                                            <h6>Dinesh Gunawardena</h6>
-                                            <div class="meta">
-                                                <span>ID: SL-2023-0056</span>
-                                                <span>45 years</span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span class="badge bg-success">Completed</span>
-                                        </div>
-                                    </div>
-                                    <div class="patient-item">
-                                        <div class="patient-avatar">RS</div>
-                                        <div class="patient-info">
-                                            <h6>Ranjan Silva</h6>
-                                            <div class="meta">
-                                                <span>ID: SL-2023-0021</span>
-                                                <span>28 years</span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span class="badge bg-info">New</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+             <div class="container mt-5">
+                    <h3 class="mb-4 text-primary"><i class="fas fa-users"></i> Patients in Your Unit</h3>
 
-                        <!-- Drug Inventory -->
-                        <div class="card">
-                            <div class="card-header">
-                                <div>
-                                    <i class="fas fa-pills"></i> Drug Inventory
-                                </div>
-                                <button class="btn btn-outline-hospital btn-sm">
-                                    <i class="fas fa-sync-alt"></i> Refresh
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive drug-list">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Drug Name</th>
-                                                <th>Dosage</th>
-                                                <th>Stock</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Paracetamol</td>
-                                                <td>500mg</td>
-                                                <td>1,240</td>
-                                                <td><span class="badge bg-success">In Stock</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Amoxicillin</td>
-                                                <td>250mg</td>
-                                                <td>342</td>
-                                                <td><span class="badge bg-success">In Stock</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Atorvastatin</td>
-                                                <td>20mg</td>
-                                                <td>78</td>
-                                                <td><span class="badge bg-warning">Low Stock</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Salbutamol</td>
-                                                <td>100mcg</td>
-                                                <td>45</td>
-                                                <td><span class="badge bg-danger">Critical</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Omeprazole</td>
-                                                <td>20mg</td>
-                                                <td>512</td>
-                                                <td><span class="badge bg-success">In Stock</span></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <?php
+                    $stmt = $conn->prepare("SELECT patient_id, fname, lname, dob, phone, gender, created_at FROM patients WHERE punit_id = ?");
+                    $stmt->bind_param("i", $unitid);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    ?>
 
-                    <!-- Prescription Form & Recent Prescriptions -->
-                   
+                    <?php if ($result->num_rows > 0): ?>
+                        <table class="table table-hover table-bordered bg-white">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Patient Name</th>
+                                    <th>DOB / Age</th>
+                                    <th>Gender</th>
+                                    <th>Phone</th>
+                                    <th>Created At</th>
+                                    <th>Prescription</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php 
+                                $count = 1;
+                                while ($row = $result->fetch_assoc()): 
+                                    $fullName = $row['fname'] . ' ' . $row['lname'];
+                                    $birthDate = new DateTime($row['dob']);
+                                    $today = new DateTime();
+                                    $age = $today->diff($birthDate)->y;
+                                ?>
+                                    <tr>
+                                        <td><?= $count++ ?></td>
+                                        <td><?= htmlspecialchars($fullName) ?></td>
+                                        <td><?= $row['dob'] ?> / <?= $age ?> yrs</td>
+                                        <td><?= $row['gender'] ?></td>
+                                        <td><?= htmlspecialchars($row['phone']) ?></td>
+                                        <td><?= $row['created_at'] ?></td>
+                                        <td>
+                                            <a href="add_prescription.php?pid=<?= $row['patient_id'] ?>" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-notes-medical"></i> Add Prescription
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
+                    <?php else: ?>
+                        <div class="alert alert-warning">No patients found for this unit.</div>
+                    <?php endif; ?>
+
                 </div>
-                
+                                
                 <!-- Footer -->
                 <div class="footer">
-                    <p>© 2023 Sri Lanka Hospital Management System. All rights reserved.</p>
-                    <p>Colombo Central Hospital | Developed for Sri Lankan Healthcare Professionals</p>
+                    
                 </div>
             </div>
         </div>
