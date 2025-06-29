@@ -132,16 +132,5 @@ foreach ($drug_ids as $index => $drug_id) {
 $insert_stmt->close();
 
 // ✅ Success message
-echo "
-    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Success!',
-            text: 'Prescription saved and stock updated successfully.',
-            confirmButtonText: 'OK'
-        }).then(() => {
-            window.location.href = 'add_prescription.php';
-        });
-    </script>";
+
 exit;

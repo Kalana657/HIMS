@@ -63,16 +63,21 @@ while ($d = $drug_result->fetch_assoc()) {
         Prescription for <?= htmlspecialchars($patient['fname'] . ' ' . $patient['lname']) ?> (DOB: <?= htmlspecialchars($patient['dob']) ?>)
     </h3>
      
+<?php
+echo "
+    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Prescription saved and stock updated successfully.',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            window.location.href = 'add_prescription.php';
+        });
+    </script>";
 
-
-<div class="container mt-5">
-    <div class="alert alert-success text-center">
-        ✅ Prescription has been successfully saved.
-    </div>
-   
-</div>
-
-
+?>
 
     <form method="POST" action="save_prescription.php">
         <input type="hidden" class="form-control" name="patient_id" value="<?= htmlspecialchars($patient_id) ?>" >
