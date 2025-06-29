@@ -65,7 +65,12 @@ while ($d = $drug_result->fetch_assoc()) {
      
 
 
-
+<div class="container mt-5">
+    <div class="alert alert-success text-center">
+        ✅ Prescription has been successfully saved.
+    </div>
+   
+</div>
 
 
 

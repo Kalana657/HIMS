@@ -92,5 +92,5 @@ foreach ($drug_ids as $index => $drug_id) {
 
 $stmt->close();
 
-header("Location: prescription_success.php"); // redirect after success
+header("Location: add_prescription.php"); // redirect after success
 exit;
