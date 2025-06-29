@@ -27,6 +27,17 @@ if ($patient_result->num_rows !== 1) {
 
 $patient = $patient_result->fetch_assoc();
 
+// Prepare select options for drug names (reused in JavaScript)
+$drugOptionsHTML = "";
+$drug_result = $conn->query("SELECT * FROM item_distributions
+    JOIN units ON units.unit_id = item_distributions.unit_id
+    JOIN inventory_item ON inventory_item.item_id = item_distributions.item_id
+    WHERE item_distributions.unit_id = $unit_id AND inventory_item.type_id = 2");
+
+while ($d = $drug_result->fetch_assoc()) {
+    $drugOptionsHTML .= '<option value="' . htmlspecialchars($d['item_name']) . '">' . htmlspecialchars($d['item_name']) . '</option>';
+}
+
 // Handle prescription form submission
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $diagnosis = $_POST['diagnosis'];
@@ -36,13 +47,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $conn->begin_transaction();
 
     try {
-        // Insert into prescriptions table
         $stmt = $conn->prepare("INSERT INTO prescriptions (patient_id, unit_id, diagnosis, notes, prescribed_by) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("iisss", $patient_id, $unit_id, $diagnosis, $notes, $prescribed_by);
         $stmt->execute();
         $prescription_id = $stmt->insert_id;
 
-        // Insert each drug entry into prescription_items table
         foreach ($_POST['drug_name'] as $i => $drug_name) {
             if (!empty($drug_name)) {
                 $dose = $_POST['dose'][$i];
@@ -93,72 +102,59 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <input type="text" class="form-control" name="prescribed_by" required>
         </div>
 
-        <div class="row mb-2 drug-item">
-         <div class="col-md-2">
-                <select name="drug_name[]" class="form-control" required>
-                    <option value="">-- Select Drug --</option>
-                    <?php
-                    $drug_result = $conn->query("SELECT *  FROM item_distributions
-                        JOIN units on units.unit_id =item_distributions.unit_id
-                        JOIN inventory_item ON inventory_item.item_id=item_distributions.item_id
-                        WHERE item_distributions.unit_id=1 && inventory_item.type_id=2");
-                    while ($d = $drug_result->fetch_assoc()) {
-                        echo '<option value="' . htmlspecialchars($d['item_name']) . '">' . htmlspecialchars($d['item_name']) . '</option>';
-                    }
-                    ?>
-                </select>
+        <!-- Drug Items -->
+        <div id="drug-items">
+            <div class="row mb-2 drug-item">
+                <div class="col-md-2">
+                    <select name="drug_name[]" class="form-control" required>
+                        <option value="">-- Select Drug --</option>
+                        <?= $drugOptionsHTML ?>
+                    </select>
+                </div>
+                <div class="col-md-2"><input type="text" name="dose[]" class="form-control" placeholder="Dose"></div>
+                <div class="col-md-2">
+                    <select name="frequency[]" class="form-control">
+                        <option value="">-- Frequency --</option>
+                        <option value="Once daily">Once daily</option>
+                        <option value="Twice daily">Twice daily</option>
+                        <option value="Thrice daily">Thrice daily</option>
+                        <option value="Every 6 hours">Every 6 hours</option>
+                        <option value="As needed">As needed</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="duration[]" class="form-control">
+                        <option value="">-- Duration --</option>
+                        <option value="3 days">3 days</option>
+                        <option value="5 days">5 days</option>
+                        <option value="7 days">7 days</option>
+                        <option value="10 days">10 days</option>
+                        <option value="14 days">14 days</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="route[]" class="form-control">
+                        <option value="">-- Route --</option>
+                        <option value="Oral">Oral</option>
+                        <option value="IV">IV</option>
+                        <option value="IM">IM</option>
+                        <option value="Subcutaneous">Subcutaneous</option>
+                        <option value="Topical">Topical</option>
+                        <option value="Inhalation">Inhalation</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="instructions[]" class="form-control">
+                        <option value="">-- Instructions --</option>
+                        <option value="After meals">After meals</option>
+                        <option value="Before meals">Before meals</option>
+                        <option value="With water">With water</option>
+                        <option value="Do not drive">Do not drive</option>
+                        <option value="Avoid alcohol">Avoid alcohol</option>
+                    </select>
+                </div>
+            </div>
         </div>
-    
-            <div class="col-md-2">
-                <select name="frequency[]" class="form-control">
-                    <option value="">-- Frequency --</option>
-                    <option value="Once daily">Once daily</option>
-                    <option value="Twice daily">Twice daily</option>
-                    <option value="Thrice daily">Thrice daily</option>
-                    <option value="Every 6 hours">Every 6 hours</option>
-                    <option value="As needed">As needed</option>
-                </select>
-            </div>
-
-           
-            <div class="col-md-2">
-                <select name="duration[]" class="form-control">
-                    <option value="">-- Duration --</option>
-                    <option value="3 days">3 days</option>
-                    <option value="5 days">5 days</option>
-                    <option value="7 days">7 days</option>
-                    <option value="10 days">10 days</option>
-                    <option value="14 days">14 days</option>
-                </select>
-            </div>
-
-            
-            <div class="col-md-2">
-                <select name="route[]" class="form-control">
-                    <option value="">-- Route --</option>
-                    <option value="Oral">Oral</option>
-                    <option value="IV">IV</option>
-                    <option value="IM">IM</option>
-                    <option value="Subcutaneous">Subcutaneous</option>
-                    <option value="Topical">Topical</option>
-                    <option value="Inhalation">Inhalation</option>
-                </select>
-            </div>
-
-            
-            <div class="col-md-2">
-                <select name="instructions[]" class="form-control">
-                    <option value="">-- Instructions --</option>
-                    <option value="After meals">After meals</option>
-                    <option value="Before meals">Before meals</option>
-                    <option value="With water">With water</option>
-                    <option value="Do not drive">Do not drive</option>
-                    <option value="Avoid alcohol">Avoid alcohol</option>
-                </select>
-            </div>
-
-</div>
-
 
         <button type="button" class="btn btn-sm btn-secondary mb-3" onclick="addDrugItem()">+ Add More</button>
 
@@ -173,13 +169,56 @@ function addDrugItem() {
     const container = document.getElementById('drug-items');
     const newItem = document.createElement('div');
     newItem.classList.add('row', 'mb-2', 'drug-item');
+
     newItem.innerHTML = `
-        <div class="col-md-2"><input type="text" name="drug_name[]" class="form-control" placeholder="Drug Name" required></div>
+        <div class="col-md-2">
+            <select name="drug_name[]" class="form-control" required>
+                <option value="">-- Select Drug --</option>
+                <?= $drugOptionsHTML ?>
+            </select>
+        </div>
         <div class="col-md-2"><input type="text" name="dose[]" class="form-control" placeholder="Dose"></div>
-        <div class="col-md-2"><input type="text" name="frequency[]" class="form-control" placeholder="Frequency"></div>
-        <div class="col-md-2"><input type="text" name="duration[]" class="form-control" placeholder="Duration"></div>
-        <div class="col-md-2"><input type="text" name="route[]" class="form-control" placeholder="Route"></div>
-        <div class="col-md-2"><input type="text" name="instructions[]" class="form-control" placeholder="Instructions"></div>
+        <div class="col-md-2">
+            <select name="frequency[]" class="form-control">
+                <option value="">-- Frequency --</option>
+                <option value="Once daily">Once daily</option>
+                <option value="Twice daily">Twice daily</option>
+                <option value="Thrice daily">Thrice daily</option>
+                <option value="Every 6 hours">Every 6 hours</option>
+                <option value="As needed">As needed</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="duration[]" class="form-control">
+                <option value="">-- Duration --</option>
+                <option value="3 days">3 days</option>
+                <option value="5 days">5 days</option>
+                <option value="7 days">7 days</option>
+                <option value="10 days">10 days</option>
+                <option value="14 days">14 days</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="route[]" class="form-control">
+                <option value="">-- Route --</option>
+                <option value="Oral">Oral</option>
+                <option value="IV">IV</option>
+                <option value="IM">IM</option>
+                <option value="Subcutaneous">Subcutaneous</option>
+                <option value="Topical">Topical</option>
+                <option value="Inhalation">Inhalation</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="instructions[]" class="form-control">
+                <option value="">-- Instructions --</option>
+                <option value="After meals">After meals</option>
+                <option value="Before meals">Before meals</option>
+                <option value="With water">With water</option>
+                <option value="Do not drive">Do not drive</option>
+                <option value="Avoid alcohol">Avoid alcohol</option>
+            </select>
+        </div>
     `;
     container.appendChild(newItem);
 }
