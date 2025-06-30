@@ -70,41 +70,7 @@ session_start();
     ?>
 
     <!-- Filters -->
-    <div class="row mb-3">
-        <div class="col-md-3">
-            <select id="filterCategory" class="form-control">
-                <option value="">All Categories</option>
-                <?php 
-                mysqli_data_seek($categories, 0);
-                while ($cat = mysqli_fetch_assoc($categories)): ?>
-                    <option value="<?= htmlspecialchars($cat['category_name']) ?>"><?= htmlspecialchars($cat['category_name']) ?></option>
-                <?php endwhile; ?>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <select id="filterType" class="form-control">
-                <option value="">All Types</option>
-                <?php 
-                mysqli_data_seek($types, 0);
-                while ($type = mysqli_fetch_assoc($types)): ?>
-                    <option value="<?= htmlspecialchars($type['type_name']) ?>"><?= htmlspecialchars($type['type_name']) ?></option>
-                <?php endwhile; ?>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <select id="filterSubtype" class="form-control">
-                <option value="">All Subtypes</option>
-                <?php 
-                mysqli_data_seek($subtypes, 0);
-                while ($sub = mysqli_fetch_assoc($subtypes)): ?>
-                    <option value="<?= htmlspecialchars($sub['subtype_name']) ?>"><?= htmlspecialchars($sub['subtype_name']) ?></option>
-                <?php endwhile; ?>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search by Name, Description, Serial No..." />
-        </div>
-    </div>
+
 
     <!-- Inventory Table -->
     <table class="table table-bordered table-striped" id="inventoryTable">
@@ -143,154 +109,109 @@ session_start();
             </div>
         </div>
     </div>
-    <script>
-    $(document).ready(function() {
-        function filterTable() {
-            var category = $('#filterCategory').val().toLowerCase();
-            var type = $('#filterType').val().toLowerCase();
-            var subtype = $('#filterSubtype').val().toLowerCase();
-            var search = $('#searchInput').val().toLowerCase();
+  
 
-            $('#inventoryTable tbody tr').each(function() {
-                var row = $(this);
-                var rowCategory = row.find('td:nth-child(5)').text().toLowerCase();
-                var rowType = row.find('td:nth-child(6)').text().toLowerCase();
-                var rowSubtype = row.find('td:nth-child(7)').text().toLowerCase();
-                var name = row.find('td:nth-child(1)').text().toLowerCase();
-                var desc = row.find('td:nth-child(2)').text().toLowerCase();
-                var serial = row.find('td:nth-child(3)').text().toLowerCase();
+   <!-- Drug Quality Complaint Modal -->
+<div class="modal fade" id="complainModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <form id="drugComplainForm">
+     <input type="hidden" name="item_id" id="item_id">
+     <input type="hidden" name="unit_id" value="<?= $unitid ?>">
+ 
+     <textarea name="description" class="form-control" rows="3" required></textarea> 
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Drug Quality Complaint</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="item_id" id="item_id">
+          <input type="hidden" name="unit_id" value="<?= $unitid ?>">
 
-                var matches = true;
-                if (category && category !== 'all' && rowCategory !== category) matches = false;
-                if (type && type !== 'all' && rowType !== type) matches = false;
-                if (subtype && subtype !== 'all' && rowSubtype !== subtype) matches = false;
-                if (search && !name.includes(search) && !desc.includes(search) && !serial.includes(search)) matches = false;
+          <div class="mb-2">
+            <label>Drug Name</label>
+            <input type="text" id="item_name" class="form-control" readonly>
+          </div>
+          <div class="mb-2">
+            <label>Drug Type</label>
+            <input type="text" name="drug_type" class="form-control" required>
+          </div>
+          <div class="mb-2">
+            <label>Batch Number</label>
+            <input type="text" name="batch_no" id="batch_no" class="form-control" required>
+          </div>
+          <div class="mb-2">
+            <label>Complaint Description</label>
+            <textarea name="description" class="form-control" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
-                row.toggle(matches);
-            });
-        }
 
-        $('#filterCategory, #filterType, #filterSubtype, #searchInput').on('input change', filterTable);
-        filterTable(); // Initial filter
-    });
 
-    function printBarcode(itemId, itemName, serialNumber) {
-        var printWindow = window.open('', '_blank');
-        if (!printWindow) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Popup blocked',
-                text: 'Please allow popups for this site to enable printing.'
-            });
-            return;
-        }
+<script>
 
-        printWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Barcode Print - ${itemName}</title>
-                <style>
-                    body { 
-                        font-family: Arial, sans-serif;
-                        text-align: center;
-                        padding: 20px;
-                    }
-                    .barcode-container {
-                        margin: 50px auto;
-                        max-width: 400px;
-                    }
-                    .item-name {
-                        font-size: 18px;
-                        font-weight: bold;
-                        margin-bottom: 10px;
-                    }
-                    .serial-number {
-                        font-size: 14px;
-                        margin-bottom: 20px;
-                    }
-                    .print-date {
-                        font-size: 12px;
-                        margin-top: 20px;
-                        color: #666;
-                    }
-                    @page {
-                        size: auto;
-                        margin: 5mm;
-                    }
-                </style>
-                <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
-            </head>
-            <body>
-                <div class="barcode-container">
-                    <div class="item-name">${itemName}</div>
-                    <div class="serial-number">SN: ${serialNumber}</div>
-                    <svg class="barcode"></svg>
-                    <div class="print-date">Printed on: ${new Date().toLocaleString()}</div>
-                </div>
-                <script>
-                    window.onload = function() {
-                        JsBarcode(".barcode", "${serialNumber}", {
-                            format: "CODE128",
-                            lineColor: "#000",
-                            width: 2,
-                            height: 60,
-                            displayValue: true,
-                            fontSize: 14
-                        });
-                        setTimeout(function() {
-                            window.print();
-                            window.close();
-                        }, 200);
-                    }
-                <\/script>
-            </body>
-            </html>
-        `);
-        printWindow.document.close();
-    }
+function openComplainModal(itemId, itemName, batchNo) {
+    $('#item_id').val(itemId);
+    $('#item_name').val(itemName);
+    $('#batch_no').val(batchNo);
+    $('#drugComplainForm')[0].reset();
+    $('#complainModal').modal('show');
+}
 
-    function submitUpdate(itemId) {
-        event.preventDefault();
-        var form = $('#updateForm' + itemId);
-        var formData = form.serialize();
-
-        $.post('update_item.php', formData, function(response) {
-            try {
-                var res = JSON.parse(response);
-                if (res.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Updated!',
-                        text: res.message
-                    }).then(() => {
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: res.message
-                    });
-                }
-            } catch {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Unexpected server response'
-                });
+$('#drugComplainForm').submit(function(e) {
+    e.preventDefault();
+    var formData = $(this).serialize();
+    $.post('submit_drug_complaint.php', formData, function(response) {
+        try {
+            var res = JSON.parse(response);
+            if (res.status === 'success') {
+                Swal.fire('Submitted!', res.message, 'success');
+                $('#complainModal').modal('hide');
+            } else {
+                Swal.fire('Error', res.message, 'error');
             }
-        }).fail(function() {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to update item. Please try again.'
-            });
-        });
+        } catch {
+            Swal.fire('Error', 'Invalid response from server.', 'error');
+        }
+    });
+});
 
-        return false;
-    }
+
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ </body>
+</html>
+   
+
+
+
+
+
+
+
+        
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
