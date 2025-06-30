@@ -78,7 +78,7 @@
     </li>
 
     <li class="nav-item">
-      <a class="nav-link" href="#"><i class="bi bi-clipboard-check"></i> Quality Control</a>
+      <a class="nav-link" href="qctable.php"><i class="bi bi-clipboard-check"></i> Quality Control</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="#"><i class="bi bi-gift"></i> Donations</a>

@@ -19,7 +19,7 @@
             <i class="bi bi-wrench"></i>
             <span>Repair</span>
         </a>
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="qctable.php">
             <i class="bi bi-clipboard-check"></i>
             <span>Quality Control</span>
         </a>
