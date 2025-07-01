@@ -125,17 +125,14 @@ session_start();
           <input type="hidden" name="unit_id" value="<?= $unitid ?>">
 
           <div class="mb-2">
-            <label>Item ID</label>
-            <input type="text" id="display_item_id" class="form-control" readonly>
+            
+            <input type="text" id="display_item_id" class="form-control" hidden>
           </div>
           <div class="mb-2">
             <label>Drug Name</label>
             <input type="text" id="item_name" class="form-control" readonly>
           </div>
-          <div class="mb-2">
-            <label>Drug Type</label>
-            <input type="text" name="drug_type" class="form-control" required>
-          </div>
+          
           <div class="mb-2">
             <label>Batch Number</label>
             <input type="text" name="batch_no" id="batch_no" class="form-control" readonly>
