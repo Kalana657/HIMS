@@ -111,23 +111,23 @@ session_start();
     </div>
   
 
-   <!-- Drug Quality Complaint Modal -->
+ <!-- Modal here OUTSIDE the foreach loop -->
 <div class="modal fade" id="complainModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <form id="drugComplainForm">
-     <input type="hidden" name="item_id" id="item_id">
-     <input type="hidden" name="unit_id" value="<?= $unitid ?>">
- 
-     <textarea name="description" class="form-control" rows="3" required></textarea> 
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Drug Quality Complaint</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <input type="hidden" name="item_id" id="item_id">
           <input type="hidden" name="unit_id" value="<?= $unitid ?>">
 
+          <div class="mb-2">
+            <label>Item ID</label>
+            <input type="text" id="display_item_id" class="form-control" readonly>
+          </div>
           <div class="mb-2">
             <label>Drug Name</label>
             <input type="text" id="item_name" class="form-control" readonly>
@@ -138,7 +138,7 @@ session_start();
           </div>
           <div class="mb-2">
             <label>Batch Number</label>
-            <input type="text" name="batch_no" id="batch_no" class="form-control" required>
+            <input type="text" name="batch_no" id="batch_no" class="form-control" Value="<?= $row['serial_number'] ?>" readonly>
           </div>
           <div class="mb-2">
             <label>Complaint Description</label>
@@ -156,15 +156,18 @@ session_start();
 
 
 
+
 <script>
 
 function openComplainModal(itemId, itemName, batchNo) {
-    $('#item_id').val(itemId);
-    $('#item_name').val(itemName);
-    $('#batch_no').val(batchNo);
-    $('#drugComplainForm')[0].reset();
-    $('#complainModal').modal('show');
+    $('#item_id').val(itemId);               // hidden input (backend)
+    $('#display_item_id').val(itemId);       // visible field
+    $('#item_name').val(itemName);           // visible drug name
+    $('#batch_no').val(batchNo);             // visible batch number
+    $('#drugComplainForm')[0].reset();       // reset the form fields
+    $('#complainModal').modal('show');       // show the modal
 }
+
 
 $('#drugComplainForm').submit(function(e) {
     e.preventDefault();
