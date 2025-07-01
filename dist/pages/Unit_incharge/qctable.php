@@ -138,8 +138,9 @@ session_start();
           </div>
           <div class="mb-2">
             <label>Batch Number</label>
-            <input type="text" name="batch_no" id="batch_no" class="form-control" Value="<?= $row['serial_number'] ?>" readonly>
-          </div>
+            <input type="text" name="batch_no" id="batch_no" class="form-control" readonly>
+
+           </div>
           <div class="mb-2">
             <label>Complaint Description</label>
             <textarea name="description" class="form-control" rows="3" required></textarea>
@@ -158,17 +159,17 @@ session_start();
 
 
 <script>
-
 function openComplainModal(itemId, itemName, batchNo) {
-    $('#item_id').val(itemId);               // hidden input (backend)
-    $('#display_item_id').val(itemId);       // visible field
-    $('#item_name').val(itemName);           // visible drug name
-    $('#batch_no').val(batchNo);             // visible batch number
-    $('#drugComplainForm')[0].reset();       // reset the form fields
-    $('#complainModal').modal('show');       // show the modal
+    $('#drugComplainForm')[0].reset();     // Clear old data first
+    $('#item_id').val(itemId);             // hidden
+    $('#display_item_id').val(itemId);     // visible
+    $('#item_name').val(itemName);         // visible
+    $('#batch_no').val(batchNo);           // visible
+    $('#complainModal').modal('show');     // show modal
 }
 
 
+// ... your existing form submission script ...
 $('#drugComplainForm').submit(function(e) {
     e.preventDefault();
     var formData = $(this).serialize();
@@ -178,6 +179,7 @@ $('#drugComplainForm').submit(function(e) {
             if (res.status === 'success') {
                 Swal.fire('Submitted!', res.message, 'success');
                 $('#complainModal').modal('hide');
+                // You might want to refresh the table or update the specific row here
             } else {
                 Swal.fire('Error', res.message, 'error');
             }
@@ -186,8 +188,6 @@ $('#drugComplainForm').submit(function(e) {
         }
     });
 });
-
-
 </script>
 
 
