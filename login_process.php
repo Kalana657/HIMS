@@ -30,9 +30,10 @@ if ($result && mysqli_num_rows($result) === 1) {
                     VALUES ('$user_id', '$ip_address', '$device_info')";
         mysqli_query($conn, $log_sql);
 
-        // redirect  based on Role_id
-        $redirect_url = "dist/pages/Admin/dsshboard.php"; // default
-        if ($user['Role_id'] == 1) {
+        if ($user['Role_id'] == 1){
+        $redirect_url = "dist/pages/Admin/dsshboard.php"; 
+        }// default
+        if ($user['Role_id'] == 2) {
             $redirect_url = "dist/pages/inventoryManger/dsshboard.php";
         } else if ($user['Role_id'] == 3) {
             $redirect_url = "dist/pages/Admin/dsshboard.php";
