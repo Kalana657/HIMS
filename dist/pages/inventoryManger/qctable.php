@@ -75,29 +75,23 @@ include('db_connect.php');
     $subtypes = mysqli_query($conn, "SELECT * FROM inventory_subtype");
 
     // Fetch items and store in array for reuse
-    $query = "
-          SELECT 
-            inventory_item.*, 
-           
-            inventory_category.*, 
-            inventory_subtype.*, 
-            inventory_type.*,
-            drug_complaints.*
+   $query = "
+    SELECT DISTINCT
+        inventory_item.*, 
+        inventory_category.*, 
+        inventory_subtype.*, 
+        inventory_type.*,
+        drug_complaints.*
         FROM 
             drug_complaints
-        JOIN 
-            inventory_item ON inventory_item.item_id = drug_complaints.item_id
-        JOIN 
-            inventory_category ON inventory_item.category_id = inventory_category.category_id
-        JOIN 
-            inventory_type ON inventory_item.type_id = inventory_type.type_id
-        JOIN 
-            inventory_subtype ON inventory_item.subtype_id = inventory_subtype.subtype_id
-        JOIN 
-            user ON user.unitin_id = drug_complaints.unit_id
-        WHERE 
-             inventory_item.category_id=2 ;
+        JOIN inventory_item ON inventory_item.item_id = drug_complaints.item_id
+        JOIN inventory_category ON inventory_item.category_id = inventory_category.category_id
+        JOIN inventory_type ON inventory_item.type_id = inventory_type.type_id
+        JOIN inventory_subtype ON inventory_item.subtype_id = inventory_subtype.subtype_id
+        JOIN user ON user.unitin_id = drug_complaints.unit_id
+        WHERE inventory_item.category_id = 2;
     ";
+
     $result = mysqli_query($conn, $query);
     $items = [];
     while ($row = mysqli_fetch_assoc($result)) {
