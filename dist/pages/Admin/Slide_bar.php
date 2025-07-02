@@ -30,7 +30,7 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="procurmentable.php">
                         <i class="bi bi-cart-plus"></i>
                         <span>Procurement</span>
                         <span class="badge bg-warning rounded-pill">18</span>
