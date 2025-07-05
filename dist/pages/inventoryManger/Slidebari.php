@@ -55,7 +55,7 @@
 
     <!-- Continue with the rest -->
     <li class="nav-item">
-      <a class="nav-link" href="#"><i class="bi bi-cart"></i> Procurement</a>
+      <a class="nav-link" href="procurmenttable.php"><i class="bi bi-cart"></i> Procurement</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="Repairs.php"><i class="bi bi-tools"></i> Repairs</a>
