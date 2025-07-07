@@ -70,6 +70,7 @@ include('db_connect.php'); // your DB connection
         JOIN inventory_subtype ON inventory_item.subtype_id = inventory_subtype.subtype_id
         JOIN item_distributions ON inventory_item.item_id=item_distributions.item_id 
         LEFT JOIN item_approvals ON inventory_item.related_item_id = item_approvals.approval_id
+        WHERE item_distributions.distributed_quantity *0.2 >=  inventory_item.quantity *0.20
         ORDER BY inventory_item.created_at DESC
     ";
     $result = mysqli_query($conn, $query);
