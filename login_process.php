@@ -2,7 +2,7 @@
 session_start();
 include('db_connect.php');
 
-// Collect and sanitize input
+//Collect and sanitize input
 $email = mysqli_real_escape_string($conn, $_POST['email']);
 $password = $_POST['password'];
 

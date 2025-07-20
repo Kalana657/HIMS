@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('db_connect.php'); // Database connection file
+include('db_connect.php'); 
 
 // Collect user input
 $username = $_POST['username'];
@@ -21,7 +21,7 @@ $result = $stmt->get_result();
 if ($result->num_rows === 1) {
     $row = $result->fetch_assoc();
 
-    // ✅ Use password_verify for encrypted passwords
+    //Use password_verify for encrypted passwords
     if (password_verify($password, $row['Password'])) {
         if ($row['Role_id'] == 6) {
             // Valid role, create session

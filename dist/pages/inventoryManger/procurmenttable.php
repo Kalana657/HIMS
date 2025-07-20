@@ -20,6 +20,30 @@ include('db_connect.php'); // your DB connection
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+     <style>
+     .modal-header {
+    border-bottom: none;
+    }
+    .modal-footer {
+        border-top: none;
+    }
+    .btn {
+        border-radius: 30px;
+    }
+    .table thead th {
+        background-color: #212529;
+        color: white;
+    }
+    .badge.bg-danger {
+        font-size: 0.9em;
+    }
+
+
+
+     </style>   
+
+
  
 
 </head>
@@ -84,44 +108,114 @@ include('db_connect.php'); // your DB connection
   
 
     <!-- Inventory Table -->
-    <table class="table table-bordered table-striped" id="inventoryTable">
-        <thead class="thead-dark">
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Serial No.</th>
-            <th>Qty</th>
-            <th>Category</th>
-            <th>Type</th>
-            <th>Subtype</th>
-            <th>Actions</th>
-        </tr>
+  <!-- Procurement Table Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="bi bi-cart-check-fill text-primary"></i> Procurement Dashboard</h3>
+    <input type="search" class="form-control w-25" id="searchInput" placeholder="Search items...">
+</div>
+
+<!-- Inventory Table -->
+<div class="table-responsive shadow rounded bg-white p-3">
+    <table class="table table-hover align-middle text-center" id="inventoryTable">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>Subtype</th>
+                <th>Actions</th>
+            </tr>
         </thead>
         <tbody>
-        <?php foreach ($items as $row): ?>
+            <?php foreach ($items as $index => $row): ?>
             <tr>
+                <td><?= $index + 1 ?></td>
                 <td><?= htmlspecialchars($row['item_name']) ?></td>
-                <td><?= htmlspecialchars($row['description']) ?></td>
-                <td><?= htmlspecialchars($row['serial_number']) ?></td>
-                <td><?= htmlspecialchars($row['quantity']) ?></td>
-                <td><?= htmlspecialchars($row['category_name']) ?></td>
-                <td><?= htmlspecialchars($row['type_name']) ?></td>
-                <td><?= htmlspecialchars($row['subtype_name']) ?></td>
+                <td><span class="badge bg-danger"><?= $row['quantity'] ?></span></td>
+                <td><?= $row['category_name'] ?></td>
+                <td><?= $row['type_name'] ?></td>
+                <td><?= $row['subtype_name'] ?></td>
                 <td>
-                 
-                    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#updateModal<?= $row['item_id'] ?>" title="Update Item">
-                        <i class="bi bi-pencil-square"></i>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#requestModal<?= $row['item_id'] ?>">
+                        <i class="bi bi-envelope-paper"></i> Request
+                    </button>
+                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#poModal<?= $row['item_id'] ?>">
+                        <i class="bi bi-file-earmark-plus"></i> PO
                     </button>
                 </td>
             </tr>
 
-       
-          
-            <!-- Update Modal -->
-        
-        <?php endforeach; ?>
+            <!-- Request Modal -->
+            <div class="modal fade" id="requestModal<?= $row['item_id'] ?>" tabindex="-1">
+              <div class="modal-dialog modal-dialog-centered">
+                <form method="post" action="submit_request.php">
+                  <input type="hidden" name="item_id" value="<?= $row['item_id'] ?>">
+                  <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                      <h5 class="modal-title"><i class="bi bi-exclamation-circle"></i> Submit Request</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p>Item: <strong><?= $row['item_name'] ?></strong></p>
+                      <label>Requested Quantity</label>
+                      <input type="number" name="requested_qty" class="form-control" required>
+                      <label>Reason</label>
+                      <textarea name="reason" class="form-control" required></textarea>
+                    </div>
+                    <div class="modal-footer">
+                      <button class="btn btn-primary">Submit</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Purchase Order Modal -->
+            <div class="modal fade" id="poModal<?= $row['item_id'] ?>" tabindex="-1">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
+                <form method="post" action="generate_po.php">
+                  <input type="hidden" name="item_id" value="<?= $row['item_id'] ?>">
+                  <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                      <h5 class="modal-title"><i class="bi bi-cart-check"></i> Generate Purchase Order</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body row">
+                      <div class="col-md-6">
+                        <label>Suggested Quantity</label>
+                        <input type="number" class="form-control" name="suggested_qty" value="10" required>
+                      </div>
+                      <div class="col-md-6">
+                        <label>Select Vendor</label>
+                        <select class="form-select" name="vendor_id">
+                          <option value="1">ABC Medicals - $12/unit</option>
+                          <option value="2">MediSupply Ltd - $10/unit</option>
+                        </select>
+                      </div>
+                      <div class="col-md-12 mt-3">
+                        <h6 class="text-muted">System Estimation:</h6>
+                        <ul class="list-group">
+                          <li class="list-group-item">Demand Forecast: <strong>10 units/month</strong></li>
+                          <li class="list-group-item">Best Vendor: <strong>MediSupply Ltd</strong></li>
+                          <li class="list-group-item">Estimated Cost: <strong>$100</strong></li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button class="btn btn-success">Generate PO</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <?php endforeach; ?>
         </tbody>
     </table>
+</div>
+
 </div>
 
 <script>
