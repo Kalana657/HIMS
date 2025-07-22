@@ -188,19 +188,27 @@ include('db_connect.php'); // your DB connection
                         <input type="number" class="form-control" name="suggested_qty" value="10" required>
                       </div>
                       <div class="col-md-6">
-                        <label>Select Vendor</label>
-                        <select class="form-select" name="vendor_id">
-                          <option value="1">ABC Medicals - $12/unit</option>
-                          <option value="2">MediSupply Ltd - $10/unit</option>
+                        <?php
+                        $vendors = mysqli_query($conn, "SELECT * FROM vendors WHERE item_id = {$row['item_id']}");
+                        ?>
+                        <select class="form-select" name="vendor_id" required>
+                            <option value="" disabled selected>Select Vendor</option>
+                            <?php while ($v = mysqli_fetch_assoc($vendors)): ?>
+                                <option value="<?= $v['vendor_id'] ?>">
+                                    <?= htmlspecialchars($v['vendor_name']) ?> - $<?= number_format($v['item_price'], 2) ?>/unit
+                                </option>
+                            <?php endwhile; ?>
                         </select>
+
                       </div>
                       <div class="col-md-12 mt-3">
                         <h6 class="text-muted">System Estimation:</h6>
                         <ul class="list-group">
-                          <li class="list-group-item">Demand Forecast: <strong>10 units/month</strong></li>
-                          <li class="list-group-item">Best Vendor: <strong>MediSupply Ltd</strong></li>
-                          <li class="list-group-item">Estimated Cost: <strong>$100</strong></li>
+                            <li class="list-group-item">Demand Forecast: <strong><span id="forecast<?= $row['item_id'] ?>">10 units/month</span></strong></li>
+                            <li class="list-group-item">Best Vendor: <strong><span id="bestVendor<?= $row['item_id'] ?>">-</span></strong></li>
+                            <li class="list-group-item">Estimated Cost: <strong>$<span id="cost<?= $row['item_id'] ?>">0.00</span></strong></li>
                         </ul>
+
                       </div>
                     </div>
                     <div class="modal-footer">
@@ -289,6 +297,13 @@ include('db_connect.php'); // your DB connection
 
         return false;
     }
+
+
+ 
+
+
+
+
 </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
