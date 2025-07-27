@@ -111,10 +111,29 @@ include('db_connect.php');
                                         <h5 class="modal-title"><i class="bi bi-cart-check"></i> Generate Purchase Order</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
+                                    <?php
+                                    // Fetch total prescribed quantity from prescriptions table for the current item (drug)
+                                    $prescribed_result = mysqli_query($conn, "
+                                        SELECT SUM(drug_qte) AS total_prescribed
+                                        FROM prescriptions
+                                        WHERE drug_id = {$row['item_id']}
+                                    ");
+                                    $prescribed_data = mysqli_fetch_assoc($prescribed_result);
+                                    $suggested_qty = isset($prescribed_data['total_prescribed']) ? $prescribed_data['total_prescribed'] * 10 : 10;
+
+
+                                    ?>
+
+ 
+
+
+
+
                                     <div class="modal-body row g-3">
                                         <div class="col-md-6">
                                             <label class="form-label">Suggested Quantity</label>
-                                            <input type="number" class="form-control" name="suggested_qty" value="10" required>
+                                            <input type="number" class="form-control" name="suggested_qty" value="<?= $suggested_qty ?>" required>
+
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Select Vendor</label>
