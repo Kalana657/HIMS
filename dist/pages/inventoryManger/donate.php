@@ -59,8 +59,8 @@ $result = mysqli_query($conn, $query);
     </table>
 
     <?php
-    // Generate modals again (separate loop to avoid mixing with table)
-    mysqli_data_seek($result, 0); // reset pointer to fetch again for modals
+
+    mysqli_data_seek($result, 0); 
     while($drug = mysqli_fetch_assoc($result)):
         $available_qty = $drug['quantity'];
         $donate_qty = $drug['approved_quantity'] - $available_qty;
