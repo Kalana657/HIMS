@@ -81,7 +81,7 @@
       <a class="nav-link" href="qctable.php"><i class="bi bi-clipboard-check"></i> Quality Control</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#"><i class="bi bi-gift"></i> Donations</a>
+      <a class="nav-link" href="donate.php"><i class="bi bi-gift"></i> Donations</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="#"><i class="bi bi-file-earmark-text"></i> Reports</a>
