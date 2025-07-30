@@ -1,9 +1,8 @@
 <?php
-include 'db_connect.php'; // your DB connection
+include 'db_connect.php';
 
-// Fetch drugs where 10% of approved quantity is more than or equal to current inventory
 $query = "SELECT 
-    item_approvals.*,
+    item_approvals.*, 
     inventory_item.*
 FROM 
     item_approvals
@@ -22,40 +21,89 @@ $result = mysqli_query($conn, $query);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="container mt-4">
-    <h3>Drug Donation Form</h3>
-    <form method="post" action="submit_donation.php">
-        <div class="mb-3">
-            <label>Donation Reason</label>
-            <textarea name="donation_reason" class="form-control" required></textarea>
+
+    <h2 class="mb-4 text-center">Drug Donation Management</h2>
+
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Drug Name</th>
+                <th>Available Qty</th>
+                <th>Max Donation Qty</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php 
+        $i = 1;
+        $result->data_seek(0); // reset pointer to beginning for while loop below
+        while($drug = mysqli_fetch_assoc($result)): 
+            $available_qty = $drug['quantity'];
+            $donate_qty = $drug['approved_quantity'] - $available_qty;
+            $modal_id = "donateModal_" . $drug['item_id'];
+        ?>
+            <tr>
+                <td><?= $i++ ?></td>
+                <td><?= htmlspecialchars($drug['item_name']) ?></td>
+                <td><?= $available_qty ?></td>
+                <td class="text-danger"><?= $donate_qty ?></td>
+                <td>
+                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#<?= $modal_id ?>">
+                        Donate
+                    </button>
+                </td>
+            </tr>
+        <?php endwhile; ?>
+        </tbody>
+    </table>
+
+    <?php
+    // Generate modals again (separate loop to avoid mixing with table)
+    mysqli_data_seek($result, 0); // reset pointer to fetch again for modals
+    while($drug = mysqli_fetch_assoc($result)):
+        $available_qty = $drug['quantity'];
+        $donate_qty = $drug['approved_quantity'] - $available_qty;
+        $modal_id = "donateModal_" . $drug['item_id'];
+    ?>
+        <div class="modal fade" id="<?= $modal_id ?>" tabindex="-1" aria-labelledby="modalLabel<?= $drug['item_id'] ?>" aria-hidden="true">
+            <div class="modal-dialog">
+                <form method="post" action="submit_donation.php" class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabel<?= $drug['item_id'] ?>">Donate - <?= htmlspecialchars($drug['item_name']) ?></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label><strong>Available Qty:</strong></label>
+                            <input type="text" class="form-control" value="<?= $available_qty ?>" readonly>
+                        </div>
+                        <div class="mb-2">
+                            <label><strong>Max Donation Qty:</strong></label>
+                            <input type="text" class="form-control text-danger" value="<?= $donate_qty ?>" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label><strong>Donation Qty:</strong></label>
+                            <input type="number" name="donate_qty" class="form-control" value="<?= $donate_qty ?>" max="<?= $donate_qty ?>" min="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label><strong>Donation Reason:</strong></label>
+                            <textarea name="donation_reason" class="form-control" rows="2" required></textarea>
+                        </div>
+
+                        <!-- Hidden Fields -->
+                        <input type="hidden" name="item_id" value="<?= $drug['item_id'] ?>">
+                        <input type="hidden" name="donated_by" value="Inventory Manager">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Confirm Donation</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
         </div>
+    <?php endwhile; ?>
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Drug Name</th>
-                    <th>Available Qty</th>
-                    <th>Donation Qty (10%)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while($drug = mysqli_fetch_assoc($result)): 
-                    $available_qty = $drug['quantity'];
-                    $donate_qty =$drug['approved_quantity']- $drug['quantity']; 
-                ?>
-                <tr>
-                    <td><?= htmlspecialchars($drug['item_name']) ?></td>
-                    <td><?= $available_qty ?></td>
-                    <td>
-                        <input type="number" name="donate_qty[<?= $drug['item_id'] ?>]" class="form-control" value="<?= $donate_qty ?>" min="1" max="<?= $available_qty ?>">
-                        <input type="hidden" name="item_ids[]" value="<?= $drug['item_id'] ?>">
-                    </td>
-                </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
-
-        <input type="hidden" name="donated_by" value="Inventory Manager">
-        <button type="submit" class="btn btn-success">Submit Donation</button>
-    </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
