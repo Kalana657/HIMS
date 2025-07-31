@@ -84,7 +84,7 @@
       <a class="nav-link" href="donate.php"><i class="bi bi-gift"></i> Donations</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#"><i class="bi bi-file-earmark-text"></i> Reports</a>
+      <a class="nav-link" href="report_dashboard.php"><i class="bi bi-file-earmark-text"></i> Reports</a>
     </li>
     <li class="nav-item mt-auto">
       <a class="nav-link" href="#"><i class="bi bi-gear"></i> Settings</a>
