@@ -1,16 +1,32 @@
 <?php
 include 'db_connect.php';
 
+// Validate input
+if (!isset($_GET['table']) || !isset($_GET['id'])) {
+    die("Missing parameters.");
+}
+
 $table = mysqli_real_escape_string($conn, $_GET['table']);
 $id = intval($_GET['id']);
 
-$allowed_tables = ['drug_complaints']; // Add other table names here for security
+// Map each allowed table to its actual primary key
+$primary_keys = [
+    'drug_complaints'   => 'complaint_id',
+    'repair_requests'   => 'request_id',
+    'lab_results'       => 'lab_result_id',
+    'reports'           => 'report_id'
+];
 
-if (!in_array($table, $allowed_tables)) {
-    die("Unauthorized table access.");
+// Validate table and get primary key
+if (!array_key_exists($table, $primary_keys)) {
+    die("Unauthorized or unknown table.");
 }
 
-$query = "SELECT * FROM `$table` WHERE id = $id";
+$primary_key = $primary_keys[$table];
+
+// Now build the correct query
+$query = "SELECT * FROM `$table` WHERE `$primary_key` = $id";
+
 $result = mysqli_query($conn, $query);
 $data = mysqli_fetch_assoc($result);
 ?>
