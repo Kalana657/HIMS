@@ -90,7 +90,8 @@
                         inventory_category.*,
                         inventory_type.*,
                         inventory_subtype.*,
-                        item_approvals.*
+                        item_approvals.*,
+                        vendors.*
                     
                     
                     FROM 
@@ -101,8 +102,11 @@
                         inventory_type ON inventory_item.type_id = inventory_type.type_id
                     JOIN 
                         inventory_subtype ON inventory_item.subtype_id = inventory_subtype.subtype_id
+                    JOIN 
+                        vendors ON inventory_item.vendor_id = vendors.vendor_id  
                     LEFT JOIN
                         item_approvals ON inventory_item.related_item_id=item_approvals.approval_id
+
                     WHERE
                     inventory_item.status=1    
 
@@ -164,7 +168,7 @@
                         <tr>
                         <th>Name</th>
                         <th>Description</th>
-                        <th>Serial No.</th>
+                        <th>Serial No.or BN Number</th>
                         <th>Qty</th>
                         <th>Category</th>
                         <th>Type</th>
@@ -175,10 +179,11 @@
                     </thead>
                     <tbody>
                         <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                        <tr>
+                        <tr>bn_number
                             <td><?= htmlspecialchars($row['item_name']) ?></td>
                             <td><?= htmlspecialchars($row['description']) ?></td>
-                            <td><?= htmlspecialchars($row['serial_number']) ?></td>
+                            <td><?= htmlspecialchars($row['serial_number']) ?>
+                            <b><?= htmlspecialchars($row['bn_number']) ?></b></td>
                             <td><?= htmlspecialchars($row['quantity']) ?></td>
                             <td><?= htmlspecialchars($row['category_name']) ?></td>
                             <td><?= htmlspecialchars($row['type_name']) ?></td>
@@ -232,7 +237,7 @@
                                                         <strong>Batch No:</strong><br><?= htmlspecialchars($row['bn_number']) ?><br><br>
 
                                                         <?php if ($row['vendor_id'] != 0): ?>
-                                                            <strong>Vendor ID:</strong><br><?= htmlspecialchars($row['vendor_id']) ?><br><br>
+                                                            <strong>Vendor Name:</strong><br><?= htmlspecialchars($row['vendor_name']) ?><br><br>
                                                             <strong>Warranty:</strong><br><?= htmlspecialchars($row['warranty_from']) ?> to <?= htmlspecialchars($row['warranty_to']) ?><br><br>
                                                         <?php endif; ?>
                                                     </div>
@@ -244,45 +249,18 @@
                                                         <strong>Expiry Date:</strong><br><?= htmlspecialchars($row['expiry_date']) ?><br><br>
                                                     </div>
                                                 </div>
-
+                                                
                                                 <div class="col-md-6 mb-3">
-                                                    <?php
-                                                        $approvedQty = $row['approved_quantity'];
-                                                        $requestedQty = $row['quantity'];
-
-                                                        if ($requestedQty === null) {
-                                                            $qtyClass = 'badge-secondary';
-                                                            $qtyNote = 'No Related Quantity';
-                                                        } else {
-                                                            if ($approvedQty > $requestedQty) {
-                                                                $qtyClass = 'badge-warning';
-                                                                $qtyNote = 'Less than requested';
-                                                            } elseif ($approvedQty < $requestedQty) {
-                                                                $qtyClass = 'badge-danger';
-                                                                $qtyNote = 'More than requested';
-                                                            } else {
-                                                                $qtyClass = 'badge-success';
-                                                                $qtyNote = 'Exact as requested';
-                                                            }
-                                                        }
-                                                    ?>
-
-                                                    <div class="form-group">
-                                                        <label><strong>Approved Quantity</strong></label>
-                                                        <input type="text" class="form-control" value="<?= htmlspecialchars($approvedQty) ?>" readonly>
-                                                         <input type="text"  name="item_id" class="form-control" value="<?= $row['item_id'] ?>" readonly>
-
-                                                        <div class="mt-2">
-                                                            <span class="badge <?= $qtyClass ?>"><?= $qtyNote ?></span>
-                                                        </div>
+                                                    <div class="border rounded p-3 bg-light">
+                                                        <strong>Quntity Avaliable</strong><br><?= htmlspecialchars($row['quantity']) ?><br><br>
+                                                        
                                                     </div>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                   
 
-                                                    <div class="form-group">
-                                                        <label for="quantity<?= $row['item_id'] ?>"><strong>Edit Requested Quantity</strong></label>
+                                                   
 
-                                                        <input type="number" name="quantity" id="quantity<?= $row['item_id'] ?>" value="<?= htmlspecialchars($requestedQty) ?>" class="form-control" max="<?= $approvedQty ?>" required oninput="validateQty<?= $row['item_id'] ?>()">
-                                                        <small id="errorMsg<?= $row['item_id'] ?>" class="text-danger" style="display:none;">Requested quantity cannot exceed approved quantity!</small>
-                                                    </div>
 
                                                     <script>
                                                         function validateQty<?= $row['item_id'] ?>() {
@@ -308,12 +286,7 @@
                                                     </script>
                                                 </div>
 
-                                                <div class="col-md-12 mb-3">
-                                                    <div class="form-group">
-                                                        <label for="comment<?= $row['item_id'] ?>"><strong>Admin Comment</strong></label>
-                                                        <textarea name="comment" id="comment<?= $row['item_id'] ?>" class="form-control" rows="3" placeholder="Enter any remarks..."></textarea>
-                                                    </div>
-                                                </div>
+                                               
                                             </div>
                                         </div>
 
