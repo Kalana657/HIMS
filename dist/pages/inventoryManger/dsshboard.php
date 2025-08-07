@@ -127,264 +127,124 @@
                     </div>
                 </div>
 
-                <!-- Tabs for Inventory Management -->
+                <!-- Table with item status -->
+             <div class="tabs-container">
+                <?php
+                include('db_connect.php');
+
+
+                $query = "
+                    SELECT 
+                        inventory_item.*,
+                        inventory_category.category_name,
+                        inventory_type.type_name,
+                        inventory_subtype.subtype_name,
+                        item_approvals.approved_quantity,
+                        item_approvals.comment,
+                        inventory_item.quantity AS current_quantity
+                    FROM inventory_item
+                    JOIN inventory_category ON inventory_item.category_id = inventory_category.category_id
+                    JOIN inventory_type ON inventory_item.type_id = inventory_type.type_id
+                    JOIN inventory_subtype ON inventory_item.subtype_id = inventory_subtype.subtype_id
+                    LEFT JOIN item_approvals ON inventory_item.item_id = item_approvals.approval_id
+                    WHERE inventory_item.category_id = 2 
+                    AND inventory_item.status = 1
+                    ORDER BY inventory_item.created_at DESC
+                ";
+
+                $result = mysqli_query($conn, $query);
+
+                $items = [];
+                $low_inventory_notifications = [];
+
+                while ($row = mysqli_fetch_assoc($result)) {
+                    // Inventory level status logic
+                    $approved = $row['approved_quantity'];
+                    $current = $row['current_quantity'];
+                    $status = 'Normal';
+
+                    if ($approved > 0) {
+                        $low_threshold = $approved * 0.2;
+                        $medium_threshold = $approved * 0.4;
+
+                        if ($current <= $low_threshold) {
+                            $status = 'Low';
+                        } elseif ($current <= $medium_threshold) {
+                            $status = 'Medium';
+                        }
+                    }
+
+                    $row['inventory_status'] = $status;
+
+                    if ($status !== 'Normal') {
+                        $low_inventory_notifications[] = $row; // Store for notification panel
+                    }
+
+                    $items[] = $row; 
+                }
+                ?>
+
+                <!-- Inventory Table UI -->
                 <div class="tabs-container">
-                    <ul class="nav nav-tabs" id="inventoryTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button" role="tab">Add New Item</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="track-tab" data-bs-toggle="tab" data-bs-target="#track" type="button" role="tab">Real-time Tracking</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="distribute-tab" data-bs-toggle="tab" data-bs-target="#distribute" type="button" role="tab">Distribution</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="vendor-tab" data-bs-toggle="tab" data-bs-target="#vendor" type="button" role="tab">Vendor Management</button>
-                        </li>
-                    </ul>
-                    <div class="tab-content p-3" id="inventoryTabsContent">
-                        <div class="tab-pane fade show active" id="add" role="tabpanel">
-                            <form>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Item Name</label>
-                                        <input type="text" class="form-control" placeholder="Enter item name">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Category</label>
-                                        <select class="form-select">
-                                            <option selected>Select category</option>
-                                            <option value="surgical">Surgical Items</option>
-                                            <option value="general">General Items</option>
-                                            <option value="pharma">Pharmaceuticals</option>
-                                            <option value="equipment">Medical Equipment</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Item Type</label>
-                                        <select class="form-select">
-                                            <option selected>Select type</option>
-                                            <option value="metal">Metals</option>
-                                            <option value="furniture">Furniture</option>
-                                            <option value="consumable">Consumables</option>
-                                            <option value="drug">Drugs</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Initial Quantity</label>
-                                        <input type="number" class="form-control" placeholder="Enter quantity">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Unit</label>
-                                        <select class="form-select">
-                                            <option selected>Select unit</option>
-                                            <option value="pcs">Pieces</option>
-                                            <option value="box">Boxes</option>
-                                            <option value="mg">Milligrams</option>
-                                            <option value="ml">Milliliters</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Storage Location</label>
-                                        <input type="text" class="form-control" placeholder="Enter storage location">
-                                    </div>
-                                    <div class="col-12 mt-3">
-                                        <button type="submit" class="btn btn-primary">Add Item & Generate Barcode</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="tab-pane fade" id="track" role="tabpanel">
-                            <div class="alert alert-warning d-flex align-items-center">
-                                <i class="bi bi-exclamation-triangle me-2"></i>
-                                <div>Low stock alert: Paracetamol 500mg is below threshold (120/200)</div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label class="form-label">Filter by Category</label>
-                                    <select class="form-select" id="categoryFilter">
-                                        <option value="all">All Items</option>
-                                        <option value="general">General Items</option>
-                                        <option value="surgical">Surgical Items</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Current Stock Levels</h6>
-                                    <div class="table-responsive">
-                                        <table class="table table-sm" id="stockTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Item</th>
-                                                    <th>Category</th>
-                                                    <th>Current Stock</th>
-                                                    <th>Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr data-category="general">
-                                                    <td>Paracetamol 500mg</td>
-                                                    <td>General</td>
-                                                    <td>120</td>
-                                                    <td><span class="badge bg-danger">Critical</span></td>
-                                                </tr>
-                                                <tr data-category="surgical">
-                                                    <td>Insulin Syringes</td>
-                                                    <td>Surgical</td>
-                                                    <td>210</td>
-                                                    <td><span class="badge bg-warning">Low</span></td>
-                                                </tr>
-                                                <tr data-category="surgical">
-                                                    <td>Surgical Gloves</td>
-                                                    <td>Surgical</td>
-                                                    <td>350</td>
-                                                    <td><span class="badge bg-success">Adequate</span></td>
-                                                </tr>
-                                                <tr data-category="general">
-                                                    <td>Antibiotic Ointment</td>
-                                                    <td>General</td>
-                                                    <td>90</td>
-                                                    <td><span class="badge bg-danger">Critical</span></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>Usage Trends</h6>
-                                    <canvas id="usageChart" height="200"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="distribute" role="tabpanel">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Unit Distribution Priority</h6>
-                                    <div class="list-group">
-                                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="mb-0">Emergency Unit</h6>
-                                                <small class="text-muted">Critical drugs and supplies</small>
-                                            </div>
-                                            <span class="badge bg-primary">Priority 1</span>
-                                        </div>
-                                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="mb-0">Surgery Department</h6>
-                                                <small class="text-muted">Surgical equipment and materials</small>
-                                            </div>
-                                            <span class="badge bg-primary">Priority 1</span>
-                                        </div>
-                                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="mb-0">Pediatrics Ward</h6>
-                                                <small class="text-muted">Children's medications</small>
-                                            </div>
-                                            <span class="badge bg-secondary">Priority 2</span>
-                                        </div>
-                                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="mb-0">Administration</h6>
-                                                <small class="text-muted">General supplies</small>
-                                            </div>
-                                            <span class="badge bg-secondary">Priority 3</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>Distribution Status</h6>
-                                    <div class="card mt-3">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between mb-3">
-                                                <div>
-                                                    <h5 class="card-title">Emergency Unit Supply</h5>
-                                                    <p class="card-text">Last updated: Today, 10:30 AM</p>
-                                                </div>
-                                                <span class="badge bg-success">Completed</span>
-                                            </div>
-                                            <div class="progress" style="height: 10px;">
-                                                <div class="progress-bar" role="progressbar" style="width: 100%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card mt-3">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between mb-3">
-                                                <div>
-                                                    <h5 class="card-title">Surgery Department</h5>
-                                                    <p class="card-text">Last updated: Today, 9:15 AM</p>
-                                                </div>
-                                                <span class="badge bg-warning">In Progress</span>
-                                            </div>
-                                            <div class="progress" style="height: 10px;">
-                                                <div class="progress-bar" role="progressbar" style="width: 65%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="vendor" role="tabpanel">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Top Vendors</h6>
-                                    <div class="table-responsive">
-                                        <table class="table table-sm">
-                                            <thead>
-                                                <tr>
-                                                    <th>Vendor</th>
-                                                    <th>Rating</th>
-                                                    <th>Delivery Time</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Pharma Lanka Ltd.</td>
-                                                    <td>
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                    </td>
-                                                    <td>2.1 days</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>MedEquip Suppliers</td>
-                                                    <td>
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                        <i class="bi bi-star-half text-warning"></i>
-                                                    </td>
-                                                    <td>3.4 days</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Surgical Care Lanka</td>
-                                                    <td>
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                        <i class="bi bi-star text-warning"></i>
-                                                    </td>
-                                                    <td>4.2 days</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>Vendor Price Comparison</h6>
-                                    <canvas id="vendorChart" height="200"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <table class="table table-bordered table-striped" id="inventoryTable">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>Name</th>
+                      
+                            
+                            <th>Qty</th>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th>Subtype</th>
+                            <th>Status</th>
+                         
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($items as $row): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($row['item_name']) ?></td>
+                              
+                            
+                                <td><?= htmlspecialchars($row['current_quantity']) ?></td>
+                                <td><?= htmlspecialchars($row['category_name']) ?></td>
+                                <td><?= htmlspecialchars($row['type_name']) ?></td>
+                                <td><?= htmlspecialchars($row['subtype_name']) ?></td>
+                                <td>
+                                    <?php
+                                        if ($row['inventory_status'] == 'Low') {
+                                            echo '<span class="badge badge-danger">Low</span>';
+                                        } elseif ($row['inventory_status'] == 'Medium') {
+                                            echo '<span class="badge badge-warning">Medium</span>';
+                                        } else {
+                                            echo '<span class="badge badge-success">Normal</span>';
+                                        }
+                                    ?>
+                                </td>
+                               
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
+
+                <!-- Optional: Admin Notification Section -->
+                <?php if (!empty($low_inventory_notifications)): ?>
+                <div class="alert alert-warning mt-3">
+                    <strong>⚠️ Inventory Alerts:</strong>
+                    <ul>
+                        <?php foreach ($low_inventory_notifications as $item): ?>
+                            <li>
+                                <?= htmlspecialchars($item['item_name']) ?> has <strong><?= $item['inventory_status'] ?></strong> level quantity: 
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <?php endif; ?>
+
+
+                </div>
+
 
                 <!-- Repair Management -->
                 <div class="row">
