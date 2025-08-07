@@ -42,10 +42,10 @@ $query = "SELECT
     inventory_item.*
 FROM 
     item_approvals
-JOIN 
+ JOIN 
     inventory_item ON item_approvals.item_idat = inventory_item.item_id
 WHERE 
-    (item_approvals.approved_quantity * 10 / 100) >= inventory_item.quantity";
+    (item_approvals.approved_quantity * 0.2) < inventory_item.quantity";
 
 $result = mysqli_query($conn, $query);
 ?>
