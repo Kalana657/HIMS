@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (!isset($_SESSION['user_id'])) {
+          header("Location: login.php");
+          exit;
+    }
 include('db_connect.php'); // your DB connection
 ?>
 
@@ -7,7 +11,7 @@ include('db_connect.php'); // your DB connection
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>HIMS | Inventory Add Requests Table</title>
+    <title>HIMS | Inventory Update Table</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -63,15 +67,21 @@ include('db_connect.php'); // your DB connection
             inventory_type.type_name,
             inventory_subtype.subtype_name,
             item_approvals.approval_id,
-            item_approvals.approved_quantity,
-            item_approvals.comment
+            item_approvals.*,
+            item_approvals.comment,
+            SUM(inventory_item.quantity) AS total_quantity
+           
         FROM inventory_item
         JOIN inventory_category ON inventory_item.category_id = inventory_category.category_id
         JOIN inventory_type ON inventory_item.type_id = inventory_type.type_id
         JOIN inventory_subtype ON inventory_item.subtype_id = inventory_subtype.subtype_id
-        LEFT JOIN item_approvals ON inventory_item.related_item_id = item_approvals.approval_id
-        WHERE inventory_item.category_id =2 &&  inventory_item.status = 1
+        LEFT JOIN item_approvals ON inventory_item.item_id = item_approvals.approval_id
+        WHERE inventory_item.category_id = 2 
+        AND inventory_item.status = 1
+        GROUP BY inventory_item.item_name
+                  
         ORDER BY inventory_item.created_at DESC
+
     ";
     $result = mysqli_query($conn, $query);
     $items = [];
@@ -137,14 +147,14 @@ include('db_connect.php'); // your DB connection
                 <td><?= htmlspecialchars($row['item_name']) ?></td>
                 <td><?= htmlspecialchars($row['description']) ?></td>
                 <td><?= htmlspecialchars($row['serial_number']) ?></td>
-                <td><?= htmlspecialchars($row['quantity']) ?></td>
+                <td><?= htmlspecialchars($row['total_quantity']) ?></td>
                 <td><?= htmlspecialchars($row['category_name']) ?></td>
                 <td><?= htmlspecialchars($row['type_name']) ?></td>
                 <td><?= htmlspecialchars($row['subtype_name']) ?></td>
                 <td>
                  
-                    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#updateModal<?= $row['item_id'] ?>" title="Update Item">
-                        <i class="bi bi-pencil-square"></i>
+                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#updateModal<?= $row['item_id'] ?>">
+                        Update
                     </button>
                 </td>
             </tr>
@@ -169,23 +179,67 @@ include('db_connect.php'); // your DB connection
                                 <div class="form-group">
                                     <label for="itemName<?= $row['item_id'] ?>">Item Name</label>
                                     <input type="text" class="form-control" id="itemName<?= $row['item_id'] ?>" name="item_name" value="<?= htmlspecialchars($row['item_name']) ?>" required>
+                                    <input type="text" class="form-control" id="itemName<?= $row['item_id'] ?>" name="item_id" value="<?= htmlspecialchars($row['item_id']) ?>" required hidden>
                                 </div>
                                 <div class="form-group">
                                     <label for="description<?= $row['item_id'] ?>">Description</label>
                                     <textarea class="form-control" id="description<?= $row['item_id'] ?>" name="description" rows="3"><?= htmlspecialchars($row['description']) ?></textarea>
                                 </div>
-                                <div class="form-group">
-                                    <label for="serialNumber<?= $row['item_id'] ?>">Serial Number</label>
-                                    <input type="text" class="form-control" id="serialNumber<?= $row['item_id'] ?>" name="serial_number" value="<?= htmlspecialchars($row['serial_number']) ?>" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="quantityUpdate<?= $row['item_id'] ?>">You can Updated Quantity</label>
-                                    <input type="number" class="form-control" id="quantityUpdate<?= $row['approved_quantity'] ?>" name="quantity" value="<?= htmlspecialchars($row['quantity']) ?>" min="1" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="quantityUpdate<?= $row['item_id'] ?>">Quantity</label>
-                                    <input type="number" class="form-control" id="quantityUpdate<?= $row['item_id'] ?>" name="quantity" value="<?= htmlspecialchars($row['quantity']) ?>" min="1" required>
-                                </div>
+                               
+                                <?php
+                                   $suggested_quantity = $row['approved_quantity'];  // System Suggested Quantity (approved qty)
+                                    $current_stock = $row['quantity'];                 // Current Stock Level
+                                    $max_update_quantity = $suggested_quantity - $current_stock;
+                                    if ($max_update_quantity < 0) $max_update_quantity = 0; // Prevent negative max
+
+                                ?>
+                               <div class="form-group">
+                                        <label for="currentStock<?= $row['item_id'] ?>">Current Stock Level</label>
+                                        <input type="number" class="form-control" name="current_level"  id="currentStock<?= $row['item_id'] ?>" value="<?= htmlspecialchars($current_stock) ?>" readonly>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="suggestedQuantity<?= $row['item_id'] ?>">System Suggested Quantity (Approved Quantity)</label>
+                                        <input type="number" class="form-control" id="suggestedQuantity<?= $row['item_id'] ?>" value="<?= htmlspecialchars($suggested_quantity) ?>" readonly>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="maxUpdateQuantity<?= $row['item_id'] ?>">You Can Update Quantity</label>
+                                        <input type="number" class="form-control" id="maxUpdateQuantity<?= $row['item_id'] ?>" value="<?= htmlspecialchars($max_update_quantity) ?>" readonly>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="updateQuantity<?= $row['item_id'] ?>">Update Quantity</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            id="updateQuantity<?= $row['item_id'] ?>" 
+                                            name="update_quantity" 
+                                            min="1" 
+                                            max="<?= htmlspecialchars($max_update_quantity) ?>" 
+                                            required
+                                            oninput="validateUpdateQuantity(this, <?= htmlspecialchars($max_update_quantity) ?>)"
+                                        >
+                                        <small id="updateQuantityError<?= $row['item_id'] ?>" class="text-danger" style="display:none;">
+                                            Quantity cannot exceed the allowed update quantity (<?= htmlspecialchars($max_update_quantity) ?>).
+                                        </small>
+                              </div>
+
+                                    <script>
+                                    function validateUpdateQuantity(input, maxVal) {
+                                        const errorElem = document.getElementById('updateQuantityError' + input.id.replace('updateQuantity', ''));
+                                        if (parseInt(input.value) > maxVal) {
+                                            errorElem.style.display = 'block';
+                                            input.setCustomValidity('Quantity cannot exceed the allowed update quantity.');
+                                        } else {
+                                            errorElem.style.display = 'none';
+                                            input.setCustomValidity('');
+                                        }
+                                    }
+                                    </script>
+
+
+
                                 <div class="form-group">
                                     <label for="categoryUpdate<?= $row['item_id'] ?>">Category</label>
                                     <select class="form-control" id="categoryUpdate<?= $row['item_id'] ?>" name="category_id" required>
