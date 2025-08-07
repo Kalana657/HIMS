@@ -156,13 +156,14 @@ while ($row = mysqli_fetch_assoc($result)):
 
         <!-- Image section -->
         <?php if (!empty($row['image_path'])): ?>
-        <div class="mb-3">
-            <strong>Uploaded Image:</strong><br>
-            <img src="<?= '../Unit_incharge/uploads/repair_images/' . htmlspecialchars($row['image_path']) ?>" class="img-fluid border rounded" style="max-height:300px;">
-        </div>
-        <?php else: ?>
-        <p><strong>Uploaded Image:</strong> No image available.</p>
-        <?php endif; ?>
+            <div class="mb-3">
+                <strong>Uploaded Image:</strong><br>
+            <img src="../Unit_incharge/uploads/repair_images/<?= htmlspecialchars($row['image_path']) ?>" class="img-fluid border rounded" style="max-height:300px;">
+            </div>
+            <?php else: ?>
+            <p><strong>Uploaded Image:</strong> No image available.</p>
+            <?php endif; ?>
+
 
         <!-- Stage update form -->
         <form action="update_stage.php" method="POST">
