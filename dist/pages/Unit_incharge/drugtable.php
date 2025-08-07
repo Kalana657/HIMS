@@ -46,7 +46,8 @@ session_start();
             item_distributions.*, 
             inventory_category.*, 
             inventory_subtype.*, 
-            inventory_type.*
+            inventory_type.*,
+            SUM(item_distributions.distributed_quantity) AS total_quantity
         FROM 
             item_distributions
         JOIN 
@@ -59,8 +60,19 @@ session_start();
             inventory_subtype ON inventory_item.subtype_id = inventory_subtype.subtype_id
         JOIN 
             user ON user.unitin_id = item_distributions.unit_id
+         
         WHERE 
-            item_distributions.unit_id = $unitid && inventory_item.category_id != 2 ;
+            item_distributions.unit_id = $unitid && inventory_item.category_id = 2 
+            
+        GROUP BY 
+            inventory_item.item_name, 
+            inventory_item.description, 
+            inventory_item.serial_number, 
+            inventory_category.category_name, 
+            inventory_subtype.subtype_name, 
+            inventory_type.type_name  
+            
+            ;
     ";
     $result = mysqli_query($conn, $query);
     $items = [];
@@ -126,7 +138,7 @@ session_start();
                 <td><?= htmlspecialchars($row['item_name']) ?></td>
                 <td><?= htmlspecialchars($row['description']) ?></td>
                 <td><?= htmlspecialchars($row['serial_number']) ?></td>
-                <td><?= htmlspecialchars($row['distributed_quantity']) ?></td>
+                 <td><?= htmlspecialchars($row['total_quantity']) ?></td>
                 <td><?= htmlspecialchars($row['category_name']) ?></td>
                 <td><?= htmlspecialchars($row['type_name']) ?></td>
                 <td><?= htmlspecialchars($row['subtype_name']) ?></td>

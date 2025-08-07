@@ -101,7 +101,7 @@ include('db_connect.php');
         JOIN inventory_type ON inventory_item.type_id = inventory_type.type_id
         JOIN inventory_subtype ON inventory_item.subtype_id = inventory_subtype.subtype_id
         LEFT JOIN item_approvals ON inventory_item.related_item_id = item_approvals.approval_id
-        WHERE inventory_item.status = 1
+        WHERE inventory_item.status = 1 
         ORDER BY inventory_item.created_at DESC
     ";
     $result = mysqli_query($conn, $query);

@@ -7,7 +7,7 @@
             <i class="bi bi-clipboard-pulse"></i>
             <span>Patient Care</span>
         </a>
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="drugtable.php">
             <i class="bi bi-capsule"></i>
             <span>Medications</span>
         </a>
