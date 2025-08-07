@@ -82,29 +82,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['distribution']) && i
     }
 
     // Show results (you can improve UI)
-    echo "<!DOCTYPE html><html><head><link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css' rel='stylesheet'></head><body class='p-4'>";
-    echo "<h4>Distribution Result</h4>";
+ echo "<!DOCTYPE html><html><head><link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css' rel='stylesheet'></head><body class='p-4'>";
+echo "<h4>Distribution Result</h4>";
 
-    if (!empty($success)) {
-        echo "<div class='alert alert-success'><ul>";
-        foreach ($success as $msg) {
-            echo "<li>" . htmlspecialchars($msg) . "</li>";
-        }
-        echo "</ul></div>";
-    }
+if (!empty($success)) {
+    echo "<div class='alert alert-success'><ul>";
+    echo"Success Add";
+    echo "</ul></div>";
+}
 
-    if (!empty($errors)) {
-        echo "<div class='alert alert-danger'><ul>";
-        foreach ($errors as $err) {
-            echo "<li>" . htmlspecialchars($err) . "</li>";
-        }
-        echo "</ul></div>";
-    }
+if (!empty($errors)) {
+    echo "<div class='alert alert-danger'><ul>";
+  
+    echo "</ul></div>";
+}
 
-    echo "<a href='your_form_file.php' class='btn btn-primary'>Back to Form</a>";
-    echo "</body></html>";
+echo "<a href='distribute_item_form.php' class='btn btn-primary'>Back to Form</a>";
+echo "</body></html>";
 
 } else {
     echo "<script>alert('Invalid form submission'); window.location.href='your_form_file.php';</script>";
 }
+
 ?>

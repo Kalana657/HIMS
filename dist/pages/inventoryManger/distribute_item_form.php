@@ -68,6 +68,31 @@ include('db_connect.php');
                    <?php include('Header.php'); ?>
 
        <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+       <?php
+            
+            if (isset($_SESSION['status']) && isset($_SESSION['message'])) {
+                $status = $_SESSION['status'];
+                $message = $_SESSION['message'];
+
+                echo '
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <script>
+                    Swal.fire({
+                        title: "' . ucfirst($status) . '!",
+                        html: "' . $message . '",
+                        icon: "' . $status . '",
+                        confirmButtonText: "OK"
+                    }).then(() => {
+                        window.location.href = "distribute_item_form.php";
+                    });
+                </script>';
+
+                unset($_SESSION['status']);
+                unset($_SESSION['message']);
+            }
+            ?>
+
         
             <div class="card-body">
 
