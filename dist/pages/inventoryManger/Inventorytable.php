@@ -154,7 +154,7 @@ include('db_connect.php');
         <tr>
             <th>Name</th>
             <th>Description</th>
-            <th>Serial No.</th>
+            <th>Serial No or BN Number</th>
             <th>Qty</th>
             <th>Category</th>
             <th>Type</th>
@@ -167,7 +167,8 @@ include('db_connect.php');
             <tr>
                 <td><?= htmlspecialchars($row['item_name']) ?></td>
                 <td><?= htmlspecialchars($row['description']) ?></td>
-                <td><?= htmlspecialchars($row['serial_number']) ?></td>
+                <td><?= htmlspecialchars($row['serial_number']) ?>
+                <b><?= htmlspecialchars($row['bn_number']) ?></b></td>
                 <td><?= htmlspecialchars($row['quantity']) ?></td>
                 <td><?= htmlspecialchars($row['category_name']) ?></td>
                 <td><?= htmlspecialchars($row['type_name']) ?></td>
@@ -202,7 +203,7 @@ include('db_connect.php');
 
                                     <strong>Batch No:</strong><br><?= htmlspecialchars($row['bn_number']) ?><br><br>
                                     <?php if ($row['vendor_id'] != 0): ?>
-                                        <strong>Vendor ID:</strong><br><?= htmlspecialchars($row['vendor_id']) ?><br><br>
+                                      
                                         <strong>Warranty:</strong><br><?= htmlspecialchars($row['warranty_from']) ?> to <?= htmlspecialchars($row['warranty_to']) ?><br><br>
                                     <?php endif; ?>
                                 </div>
@@ -236,8 +237,8 @@ include('db_connect.php');
                         </div>
                         <div class="modal-footer">
                             <!-- Print button -->
-                            <button type="button" class="btn btn-info" onclick="printBarcode(<?= $row['item_id'] ?>, '<?= htmlspecialchars($row['item_name']) ?>', '<?= htmlspecialchars($row['serial_number']) ?>')">
-                                <i class="bi bi-printer"></i> Print Barcode
+                             <button type="button" class="btn btn-info" onclick="printBarcode(<?= $row['item_id'] ?>, '<?= htmlspecialchars($row['item_name']) ?>', '<?= htmlspecialchars($row['serial_number']) ?>', '<?= htmlspecialchars($row['bn_number']) ?>')">
+                            <i class="bi bi-printer"></i> Print Barcode
                             </button>
                             <!-- Approve button -->
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -245,15 +246,20 @@ include('db_connect.php');
 
                         <script>
                             // Generate barcode on modal shown
-                            $('#detailsModal<?= $row['item_id'] ?>').on('shown.bs.modal', function () {
-                                JsBarcode("#barcode<?= $row['item_id'] ?>", "<?= htmlspecialchars($row['serial_number']) ?>", {
-                                    format: "CODE128",
-                                    lineColor: "#0aa",
-                                    width: 2,
-                                    height: 40,
-                                    displayValue: true
+                           <?php
+                            $barcodeValue = !empty($row['serial_number']) ? $row['serial_number'] : $row['bn_number'];
+                            ?>
+                           
+                                $('#detailsModal<?= $row['item_id'] ?>').on('shown.bs.modal', function () {
+                                    JsBarcode("#barcode<?= $row['item_id'] ?>", "<?= htmlspecialchars($barcodeValue) ?>", {
+                                        format: "CODE128",
+                                        lineColor: "#0aa",
+                                        width: 2,
+                                        height: 40,
+                                        displayValue: true
+                                    });
                                 });
-                            });
+                           
 
                             function submitApproval(itemId) {
                                 var qtyInput = document.getElementById('quantity' + itemId);
@@ -349,122 +355,77 @@ include('db_connect.php');
         filterTable(); 
     });
 
-    function printBarcode(itemId, itemName, serialNumber) {
-        var printWindow = window.open('', '_blank');
-        if (!printWindow) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Popup blocked',
-                text: 'Please allow popups for this site to enable printing.'
-            });
-            return;
-        }
+    function printBarcode(itemId, itemName, serialNumber, bnNumber) {
+    var barcodeValue = serialNumber || bnNumber || "UNKNOWN";
 
-        printWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Barcode Print - ${itemName}</title>
-                <style>
-                    body { 
-                        font-family: Arial, sans-serif;
-                        text-align: center;
-                        padding: 20px;
-                    }
-                    .barcode-container {
-                        margin: 50px auto;
-                        max-width: 400px;
-                    }
-                    .item-name {
-                        font-size: 18px;
-                        font-weight: bold;
-                        margin-bottom: 10px;
-                    }
-                    .serial-number {
-                        font-size: 14px;
-                        margin-bottom: 20px;
-                    }
-                    .print-date {
-                        font-size: 12px;
-                        margin-top: 20px;
-                        color: #666;
-                    }
-                    @page {
-                        size: auto;
-                        margin: 5mm;
-                    }
-                </style>
-                <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
-            </head>
-            <body>
-                <div class="barcode-container">
-                    <div class="item-name">${itemName}</div>
-                    <div class="serial-number">SN: ${serialNumber}</div>
-                    <svg class="barcode"></svg>
-                    <div class="print-date">Printed on: ${new Date().toLocaleString()}</div>
-                </div>
-                <script>
-                    window.onload = function() {
-                        JsBarcode(".barcode", "${serialNumber}", {
-                            format: "CODE128",
-                            lineColor: "#000",
-                            width: 2,
-                            height: 60,
-                            displayValue: true,
-                            fontSize: 14
-                        });
-                        setTimeout(function() {
-                            window.print();
-                            window.close();
-                        }, 200);
-                    }
-                <\/script>
-            </body>
-            </html>
-        `);
-        printWindow.document.close();
-    }
-
-    function submitUpdate(itemId) {
-        event.preventDefault();
-        var form = $('#updateForm' + itemId);
-        var formData = form.serialize();
-
-        $.post('update_item.php', formData, function(response) {
-            try {
-                var res = JSON.parse(response);
-                if (res.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Updated!',
-                        text: res.message
-                    }).then(() => {
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: res.message
-                    });
-                }
-            } catch {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Unexpected server response'
-                });
-            }
-        }).fail(function() {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to update item. Please try again.'
-            });
+    var printWindow = window.open('', '_blank');
+    if (!printWindow) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Popup blocked',
+            text: 'Please allow popups for this site to enable printing.'
         });
-
-        return false;
+        return;
     }
+
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Barcode Print - ${itemName}</title>
+            <style>
+                body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+                .barcode-container {
+                    margin: 50px auto;
+                    max-width: 400px;
+                }
+                .item-name {
+                    font-size: 18px;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                }
+                .serial-number {
+                    font-size: 14px;
+                    margin-bottom: 20px;
+                }
+                .print-date {
+                    font-size: 12px;
+                    margin-top: 20px;
+                    color: #666;
+                }
+                @page { size: auto; margin: 5mm; }
+            </style>
+            <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
+        </head>
+        <body>
+            <div class="barcode-container">
+                <div class="item-name">${itemName}</div>
+                <div class="serial-number">Code: ${barcodeValue}</div>
+                <svg class="barcode"></svg>
+                <div class="print-date">Printed on: ${new Date().toLocaleString()}</div>
+            </div>
+            <script>
+                window.onload = function() {
+                    JsBarcode(".barcode", "${barcodeValue}", {
+                        format: "CODE128",
+                        lineColor: "#000",
+                        width: 2,
+                        height: 60,
+                        displayValue: true,
+                        fontSize: 14
+                    });
+                    setTimeout(function() {
+                        window.print();
+                        window.close();
+                    }, 200);
+                }
+            <\/script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
