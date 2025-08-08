@@ -10,7 +10,7 @@ $id = intval($_GET['id']);
 
 // Map allowed tables to primary keys
 $primary_keys = [
-    'drug_complaints' => 'complaint_id',
+    'drug_complaints' => 'id',  
     'repair_requests' => 'request_id',
     'lab_results'     => 'lab_result_id',
     'reports'         => 'report_id'
@@ -28,6 +28,7 @@ switch ($table) {
         $query = "SELECT drug_complaints.*, units.*, inventory_item.* 
                   FROM drug_complaints
                   JOIN units ON drug_complaints.unit_id = units.unit_id
+                 
                   JOIN inventory_item ON drug_complaints.item_id = inventory_item.item_id
                   WHERE drug_complaints.$primary_key = $id";
         break;
@@ -45,38 +46,68 @@ switch ($table) {
         break;
 }
 
-
-
 $result = mysqli_query($conn, $query);
 if (!$result) {
     die("SQL Error: " . mysqli_error($conn) . "<br>Query: " . $query);
 }
 $data = mysqli_fetch_assoc($result);
-
-
 ?>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>View Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <title>View Document - <?= htmlspecialchars($table) ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        @media print {
+            #printBtn, #backBtn {
+                display: none;
+            }
+        }
+        th {
+            width: 30%;
+            text-align: right;
+            font-weight: 600;
+            vertical-align: top;
+        }
+    </style>
 </head>
-<body class="container mt-4">
-    <h3 class="mb-3">Document Details from <?= htmlspecialchars($table) ?></h3>
+<body class="container mt-4 mb-5">
+    <h3 class="mb-4">Document Details: <span class="text-primary"><?= htmlspecialchars(ucwords(str_replace('_', ' ', $table))) ?></span></h3>
 
     <?php if ($data): ?>
-        <table class="table table-striped">
-            <?php foreach ($data as $key => $value): ?>
-                <tr>
-                    <th><?= htmlspecialchars(ucwords(str_replace('_', ' ', $key))) ?></th>
-                    <td><?= htmlspecialchars($value) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+       <table class="table table-bordered table-striped">
+    <tbody>
+    <?php
+    $exclude_fields = ['id', 'unit_id', 'item_id', 'drug_type','status', 
+    'serial_number', 'Batch_No', 'approve_by','Vendor_id','Admin Comment'];
+    foreach ($data as $key => $value):
+        if (in_array($key, $exclude_fields)) {
+            continue;
+        }
+    ?>
+        <tr>
+            <th><?= htmlspecialchars(ucwords(str_replace('_', ' ', $key))) ?></th>
+            <td><?= nl2br(htmlspecialchars($value)) ?></td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
+
     <?php else: ?>
         <div class="alert alert-danger">Document not found.</div>
     <?php endif; ?>
 
-    <a href="documents.php" class="btn btn-secondary mt-3">Back to Document List</a>
+    <div class="mt-4">
+        <button id="printBtn" class="btn btn-success me-2" onclick="window.print()">
+            <i class="bi bi-printer"></i> Print
+        </button>
+        <a id="backBtn" href="report_dashboard.php" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Document List
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.js"></script>
 </body>
 </html>
