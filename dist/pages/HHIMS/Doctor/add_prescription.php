@@ -54,14 +54,46 @@ while ($d = $drug_result->fetch_assoc()) {
 <head>
     <title>Add Prescription</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+      <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+128+Text&display=swap" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body>
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <?php include('sidebar.php') ?>
+
+            <!-- Main Content -->
+            <div class="col-md-10 ms-sm-auto main-content">
+                <!-- Header -->
+                <?php include('header.php') ?>
 <div class="container mt-5">
     <h3 class="mb-4 text-primary">
         Prescription for <?= htmlspecialchars($patient['fname'] . ' ' . $patient['lname']) ?> (DOB: <?= htmlspecialchars($patient['dob']) ?>)
     </h3>
      
-
+    <?php
+if (isset($_SESSION['status']) && isset($_SESSION['message'])) {
+    $status = $_SESSION['status'];
+    $message = $_SESSION['message'];
+    // Clear the message so it doesn't show again on refresh
+    unset($_SESSION['status'], $_SESSION['message']);
+?>
+    <div class="alert alert-<?= $status === 'success' ? 'success' : 'danger' ?> alert-dismissible fade show mt-3" role="alert">
+        <?= htmlspecialchars($message) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php
+}
+?>
 
     <form method="POST" action="save_prescription.php">
         <input type="hidden" class="form-control" name="patient_id" value="<?= htmlspecialchars($patient_id) ?>" >
@@ -143,7 +175,7 @@ while ($d = $drug_result->fetch_assoc()) {
         </div>
     </form>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function addDrugItem() {
     const container = document.getElementById('drug-items');

@@ -6,23 +6,13 @@
                   
                     
                     <li class="nav-item">
-                        <a class="nav-link" href="prescription.php">
+                        <a class="nav-link" href="dashboard.php">
                             <i class="fas fa-file-prescription"></i> <span>Prescriptions</span>
-                            <span class="notification-badge">5</span>
+                            
                         </a>
                     </li>
                   
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-calendar-check"></i> <span>Appointments</span>
-                            <span class="notification-badge">3</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-chart-line"></i> <span>Reports</span>
-                        </a>
-                    </li>
+                   
                     
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">
