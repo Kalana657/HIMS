@@ -11,6 +11,12 @@
                             
                         </a>
                     </li>
+                   <li class="nav-item">
+                        <a class="nav-link" href="Prescription_table.php">
+                            <i class="fas fa-file-prescription"></i> <span>Prescriptions Table</span>
+                            
+                        </a>
+                    </li>
                   
                    
                     
