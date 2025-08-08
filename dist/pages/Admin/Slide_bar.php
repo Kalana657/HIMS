@@ -79,9 +79,9 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="login_details_table.php">
                         <i class="bi bi-file-earmark-bar-graph"></i>
-                        <span>Reports</span>
+                        <span>User Report</span>
                     </a>
                 </li>
                 <li class="nav-item mt-4">

@@ -23,10 +23,7 @@
             <i class="bi bi-clipboard-check"></i>
             <span>Quality Control</span>
         </a>
-        <a class="nav-link" href="#">
-            <i class="bi bi-file-earmark-text"></i>
-            <span>Reports</span>
-        </a>
+     
         <a class="nav-link" href="logout.php">
             <i class="bi bi-box-arrow-right"></i>
             <span>Logout</span>
