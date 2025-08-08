@@ -159,8 +159,8 @@
 
                 while ($row = mysqli_fetch_assoc($result)) {
                     // Inventory level status logic
-                    $approved = $row['approved_quantity'];
-                    $current = $row['current_quantity'];
+                     $approved = $row['approved_quantity'];
+                     $current = $row['current_quantity'];
                     $status = 'Normal';
 
                     if ($approved > 0) {

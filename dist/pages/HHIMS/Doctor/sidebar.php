@@ -1,6 +1,6 @@
  <div class="col-md-2 col-lg-2 d-md-block sidebar">
                 <div class="logo">
-                    <h4 class="logo-text"><i class="fas fa-hospital me-1"></i> <span>Colombo</span>HMS</h4>
+                    <h4 class="logo-text"><i class="fas fa-hospital me-1"></i> <span>HHIMS</h4>
                 </div>
                 <ul class="nav flex-column mt-4">
                   

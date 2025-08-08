@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     die("Invalid access.");
 }
 
-$patient_id = intval($_POST['patient_id'] ?? 0);
+echo $patient_id = $_POST['patient_id'];
 if ($patient_id <= 0) {
     die("Invalid patient ID.");
 }
@@ -131,6 +131,13 @@ foreach ($drug_ids as $index => $drug_id) {
 
 $insert_stmt->close();
 
-// ✅ Success message
+
+// Set success message and redirect (so your UI can show Swal from the redirected page)
+$_SESSION['status']  = 'success';
+$_SESSION['message'] = 'Prescription saved and stock updated successfully.';
+
+// Redirect to the page where you want to show the message
+header("Location: add_prescription.php"); // change to your desired page, e.g. repir.php or index.php
+exit();
 
 exit;

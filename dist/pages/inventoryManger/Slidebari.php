@@ -86,6 +86,9 @@
     <li class="nav-item">
       <a class="nav-link" href="report_dashboard.php"><i class="bi bi-file-earmark-text"></i> Reports</a>
     </li>
+     <li class="nav-item">
+      <a class="nav-link" href="po.php"><i class="bi bi-file-earmark-text"></i> P0</a>
+    </li>
     <li class="nav-item mt-auto">
       <a class="nav-link" href="#"><i class="bi bi-gear"></i> Settings</a>
     </li>

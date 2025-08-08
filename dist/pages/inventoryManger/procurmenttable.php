@@ -48,20 +48,24 @@ include('db_connect.php');
             }
 
             $query = "
-                SELECT 
-                    inventory_item.*,
-                    inventory_category.category_name,
-                    inventory_type.type_name,
-                    inventory_subtype.subtype_name,
-                    item_distributions.*
-                FROM inventory_item
-                JOIN inventory_category ON inventory_item.category_id = inventory_category.category_id
-                JOIN inventory_type ON inventory_item.type_id = inventory_type.type_id
-                JOIN inventory_subtype ON inventory_item.subtype_id = inventory_subtype.subtype_id
-                JOIN item_distributions ON inventory_item.item_id = item_distributions.item_id 
-                LEFT JOIN item_approvals ON inventory_item.related_item_id = item_approvals.approval_id
-                WHERE item_distributions.distributed_quantity * 0.2 >= inventory_item.quantity * 0.20
-                ORDER BY inventory_item.created_at DESC
+              SELECT 
+                        inventory_item.*,
+                        inventory_category.category_name,
+                        inventory_type.type_name,
+                        inventory_subtype.subtype_name,
+                        item_approvals.approved_quantity,
+                        item_approvals.comment
+                       
+                    FROM inventory_item
+                    JOIN inventory_category ON inventory_item.category_id = inventory_category.category_id
+                    JOIN inventory_type ON inventory_item.type_id = inventory_type.type_id
+                    JOIN inventory_subtype ON inventory_item.subtype_id = inventory_subtype.subtype_id
+                    LEFT JOIN item_approvals ON inventory_item.item_id = item_approvals.approval_id
+                    WHERE inventory_item.category_id = 2 
+                    AND inventory_item.status = 1
+                    AND  inventory_item.quantity <= item_approvals.approved_quantity *0.2
+                    
+
             ";
 
             $result = mysqli_query($conn, $query);
@@ -79,7 +83,8 @@ include('db_connect.php');
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h5 class="card-title mb-0">
                                         <i class="bi bi-capsule text-primary"></i>
-                                        <?= htmlspecialchars($row['item_name']) ?>
+                                        <?= htmlspecialchars($row['item_name'])  ?>
+                                    
                                     </h5>
                                     <span class="badge bg-danger">
                                         <i class="bi bi-exclamation-circle"></i> <?= $row['quantity'] ?>
@@ -90,9 +95,7 @@ include('db_connect.php');
                                 </p>
 
                                 <div class="mt-3 d-flex justify-content-between">
-                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#requestModal<?= $row['item_id'] ?>">
-                                        <i class="bi bi-envelope-paper-fill"></i>
-                                    </button>
+                                    
                                     <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#poModal<?= $row['item_id'] ?>">
                                         <i class="bi bi-file-plus-fill"></i>
                                     </button>
@@ -144,7 +147,7 @@ include('db_connect.php');
                                                 while ($v = mysqli_fetch_assoc($vendors)):
                                                 ?>
                                                     <option value="<?= $v['vendor_id'] ?>" <?= $first ? 'selected' : '' ?>>
-                                                        <?= htmlspecialchars($v['vendor_name']) ?> - $<?= number_format($v['item_price'], 2) ?>/unit
+                                                        <?= htmlspecialchars($v['vendor_name']) ?> - Rs.<?= number_format($v['item_price'], 2) ?>/unit
                                                     </option>
                                                 <?php
                                                     $first = false;
@@ -198,11 +201,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const selectedOption = vendorSelect.selectedOptions[0];
 
             if (selectedOption && selectedOption.value !== "") {
-                const priceText = selectedOption.textContent.split("$")[1];
+                const priceText = selectedOption.textContent.split("Rs")[1];
                 const price = parseFloat(priceText);
                 if (!isNaN(price)) {
                     const total = price * qty;
-                    costSpan.textContent = "$" + total.toFixed(2);
+                    costSpan.textContent = "Rs" + total.toFixed(2);
                     bestVendorSpan.textContent = selectedOption.textContent.split("-")[0].trim();
                     return;
                 }

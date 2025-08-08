@@ -7,12 +7,10 @@ if (!isset($_SESSION['unitin_id'])) {
     die("Access denied. Please login first.");
 }
 $unit_id = $_SESSION['unitin_id'];
+$user =$_SESSION['username'];
 
-// Check patient ID from GET
-if (!isset($_GET['pid'])) {
-    die("Patient ID is missing.");
-}
-$patient_id = intval($_GET['pid']); // Sanitize
+
+echo $patient_id = intval($_GET['pid']); // Sanitize
 
 // Fetch patient details
 $stmt = $conn->prepare("SELECT fname, lname, dob FROM patients WHERE patient_id = ?");
@@ -34,7 +32,7 @@ $sql = "SELECT inventory_item.item_id, inventory_item.item_name
         FROM item_distributions
         JOIN units ON units.unit_id = item_distributions.unit_id
         JOIN inventory_item ON inventory_item.item_id = item_distributions.item_id
-        WHERE item_distributions.unit_id = ? AND inventory_item.type_id = 2";
+        WHERE item_distributions.unit_id = ? AND inventory_item.category_id =2 ";
 
 $stmt_drugs = $conn->prepare($sql);
 $stmt_drugs->bind_param("i", $unit_id);
@@ -63,21 +61,7 @@ while ($d = $drug_result->fetch_assoc()) {
         Prescription for <?= htmlspecialchars($patient['fname'] . ' ' . $patient['lname']) ?> (DOB: <?= htmlspecialchars($patient['dob']) ?>)
     </h3>
      
-<?php
-echo "
-    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Success!',
-            text: 'Prescription saved and stock updated successfully.',
-            confirmButtonText: 'OK'
-        }).then(() => {
-            window.location.href = 'add_prescription.php';
-        });
-    </script>";
 
-?>
 
     <form method="POST" action="save_prescription.php">
         <input type="hidden" class="form-control" name="patient_id" value="<?= htmlspecialchars($patient_id) ?>" >
@@ -93,7 +77,7 @@ echo "
 
         <div class="mb-3">
             <label class="form-label">Prescribed By <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" name="prescribed_by" required>
+            <input type="text" class="form-control" name="prescribed_by" value="Dr.<?= $user ?>"required>
         </div>
 
         <!-- Drug Items -->
